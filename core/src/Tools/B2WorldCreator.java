@@ -78,6 +78,8 @@ public class B2WorldCreator {
                     new BunsStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("onion")) {
                     new OnionStation(world, map, bdef, rectangle);
+                } else if (mapObject.getName().equals("cheese")) {
+                    new CheeseStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan1")) {
                     new Pan(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("steak")) {

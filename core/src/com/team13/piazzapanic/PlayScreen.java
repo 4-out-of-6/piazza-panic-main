@@ -225,6 +225,11 @@ public class PlayScreen implements Screen {
                                 controlledChef.setInHandsIng(lettuceTile.getIngredient());
                                 controlledChef.setChefSkin(controlledChef.getInHandsIng());
                                 break;
+                            case "Sprites.CheeseStation":
+                                CheeseStation cheeseTile = (CheeseStation) tile;
+                                controlledChef.setInHandsIng(cheeseTile.getIngredient());
+                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
+                                break;
                             case "Sprites.PlateStation":
                                 if(plateStation.getPlate().size() > 0 || plateStation.getCompletedRecipe() != null){
                                     controlledChef.pickUpItemFrom(tile);

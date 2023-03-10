@@ -51,6 +51,8 @@ public class Chef extends Sprite {
     private final Texture completedBurgerChef;
     private final Texture meatChef;
     private Texture saladChef;
+    private final Texture cheeseChef;
+    private final Texture choppedCheeseChef;
 
     public enum State {UP, DOWN, LEFT, RIGHT}
 
@@ -104,6 +106,9 @@ public class Chef extends Sprite {
         meatChef = new Texture("Chef/Chef_holding_meat.png");
         saladChef = new Texture("Chef/Chef_holding_salad.png");
         saladChef = new Texture("Chef/Chef_holding_salad.png");
+        cheeseChef = new Texture("Chef/Chef_holding_salad.png");
+        choppedCheeseChef = new Texture("Chef/Chef_holding_salad.png");
+
 
 
         skinNeeded = normalChef;
@@ -385,6 +390,12 @@ public class Chef extends Sprite {
                 skinNeeded = bunsToastedChef;
             } else {
                 skinNeeded = bunsChef;
+            }
+        } else if (item instanceof Cheese){
+            if (inHandsIng.isPrepared()) {
+                skinNeeded = choppedCheeseChef;
+            } else {
+                skinNeeded = cheeseChef;
             }
         } else if (item instanceof BurgerRecipe) {
             skinNeeded = completedBurgerChef;
