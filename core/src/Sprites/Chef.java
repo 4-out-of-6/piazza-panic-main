@@ -126,7 +126,7 @@ public class Chef extends Sprite {
     @Override
     public void draw (Batch batch) {
 
-        // Replication of static final values in sSprite class
+        // Replication of static final values in Sprite class
         int vertexSize = 2 + 1 + 2;
         int spriteSize = 4 * vertexSize;
 
@@ -383,7 +383,7 @@ public class Chef extends Sprite {
     }
 
     /**
-     * Method to display the ingredient on the specific interactive tile objects (ChoppingBoard/Pan)
+     * Method to display the ingredient on the specific interactive tile objects (ChoppingBoard/Pan/Worktop)
      * @param batch the SpriteBatch used to render the texture.
      */
 
@@ -555,13 +555,13 @@ public class Chef extends Sprite {
      * @param station The plate station to pick up the item from.
      */
     public void pickUpItemFrom(InteractiveTileObject station){
-        if (station instanceof PlateStation){
+        if (station instanceof PlateStation) {
             PlateStation pStation = (PlateStation) station;
             Object item = pStation.pickUpItem();
-            if (item instanceof Ingredient){
+            if (item instanceof Ingredient) {
                 setInHandsIng((Ingredient) item);
                 setChefSkin(item);
-            } else if (item instanceof Recipe){
+            } else if (item instanceof Recipe) {
                 setInHandsRecipe(((Recipe) item));
                 setChefSkin(item);
             }

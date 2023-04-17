@@ -65,7 +65,8 @@ public class B2WorldCreator {
                 if (mapObject.getName().equals("bin")) {
                     new Bin(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("worktop")) {
-                    new Worktop(world, map, bdef, rectangle);
+                    Worktop newWorktop = new Worktop(world, map, bdef, rectangle);
+                    screen.worktopStations.add(newWorktop);
                 } else if (mapObject.getName().equals("chopping_board")) {
                     new ChoppingBoard(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("plate")) {

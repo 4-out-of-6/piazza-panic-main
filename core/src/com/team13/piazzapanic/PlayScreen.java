@@ -62,6 +62,7 @@ public class PlayScreen implements Screen {
     public ArrayList<Order> ordersArray;
 
     public PlateStation plateStation;
+    public ArrayList<Worktop> worktopStations = new ArrayList<>();
 
 
     public Boolean scenarioComplete;
@@ -198,6 +199,8 @@ public class PlayScreen implements Screen {
                 if(controlledChef.getTouchingTile() != null){
                     InteractiveTileObject tile = (InteractiveTileObject) controlledChef.getTouchingTile().getUserData();
                     String tileName = tile.getClass().getName();
+
+                    // If chef is not holding anything
                     if (controlledChef.getInHandsIng() == null && controlledChef.getInHandsRecipe() == null) {
                         switch (tileName) {
                             case "Sprites.TomatoStation":
@@ -240,6 +243,12 @@ public class PlayScreen implements Screen {
                                 controlledChef.setInHandsIng(potatoTile.getIngredient());
                                 controlledChef.setChefSkin(controlledChef.getInHandsIng());
                                 break;
+                            case "Sprites.Worktop":
+                                Worktop worktopTile = (Worktop) tile;
+                                controlledChef.setInHandsIng(worktopTile.getIngredient());
+                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
+                                worktopTile.setIngredient(null);
+                                break;
                             case "Sprites.PlateStation":
                                 if(plateStation.getPlate().size() > 0 || plateStation.getCompletedRecipe() != null){
                                     controlledChef.pickUpItemFrom(tile);
@@ -262,12 +271,24 @@ public class PlayScreen implements Screen {
                                     }
                                 }
                                break;
+
+                            case "Sprites.Worktop":
+                                Worktop worktopTile = (Worktop) tile;
+                                if(controlledChef.getInHandsIng() != null && worktopTile.getIngredient() == null)
+                                {
+                                    worktopTile.setIngredient(controlledChef.getInHandsIng());
+                                    controlledChef.setInHandsIng(null);
+                                    controlledChef.setChefSkin(null);
+                                }
+                                break;
+
                             case "Sprites.PlateStation":
                                 if (controlledChef.getInHandsRecipe() == null){
                                 controlledChef.dropItemOn(tile, controlledChef.getInHandsIng());
                                 controlledChef.setChefSkin(null);
                             }
                                 break;
+
                             case "Sprites.Pan":
                                 if(controlledChef.getInHandsIng() != null) {
                                     if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0){
@@ -393,6 +414,8 @@ public class PlayScreen implements Screen {
         chef1.draw(game.batch);
         chef2.draw(game.batch);
         controlledChef.drawNotification(game.batch);
+
+        // Render ingredients on the plate
         if (plateStation.getPlate().size() > 0){
             for(Object ing : plateStation.getPlate()){
                 Ingredient ingNew = (Ingredient) ing;
@@ -402,6 +425,17 @@ public class PlayScreen implements Screen {
             Recipe recipeNew = plateStation.getCompletedRecipe();
             recipeNew.create(plateStation.getX(), plateStation.getY(), game.batch);
         }
+
+        // Render ingredients on the worktops
+        for(Worktop w : worktopStations)
+        {
+            Ingredient ing = w.getIngredient();
+            if(ing != null)
+            {
+                ing.create(w.getX(), w.getY(), game.batch);
+            }
+        }
+
         if (!chef1.getUserControlChef()) {
             if (chef1.getTouchingTile() != null && chef1.getInHandsIng() != null){
                 if (chef1.getTouchingTile().getUserData() instanceof InteractiveTileObject){
