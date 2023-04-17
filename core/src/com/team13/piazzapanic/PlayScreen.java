@@ -200,117 +200,104 @@ public class PlayScreen implements Screen {
                     InteractiveTileObject tile = (InteractiveTileObject) controlledChef.getTouchingTile().getUserData();
                     String tileName = tile.getClass().getName();
 
-                    // If chef is not holding anything
-                    if (controlledChef.getInHandsIng() == null && controlledChef.getInHandsRecipe() == null) {
-                        switch (tileName) {
-                            case "Sprites.TomatoStation":
-                                TomatoStation tomatoTile = (TomatoStation) tile;
-                                controlledChef.setInHandsIng(tomatoTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.BunsStation":
-                                BunsStation bunTile = (BunsStation) tile;
-                                controlledChef.setInHandsIng(bunTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.OnionStation":
-                                OnionStation onionTile = (OnionStation) tile;
-                                controlledChef.setInHandsIng(onionTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.SteakStation":
-                                SteakStation steakTile = (SteakStation) tile;
-                                controlledChef.setInHandsIng(steakTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.LettuceStation":
-                                LettuceStation lettuceTile = (LettuceStation) tile;
-                                controlledChef.setInHandsIng(lettuceTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.CheeseStation":
-                                CheeseStation cheeseTile = (CheeseStation) tile;
-                                controlledChef.setInHandsIng(cheeseTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.DoughStation":
-                                DoughStation doughTile = (DoughStation) tile;
-                                controlledChef.setInHandsIng(doughTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.PotatoStation":
-                                PotatoStation potatoTile = (PotatoStation) tile;
-                                controlledChef.setInHandsIng(potatoTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
-                                break;
-                            case "Sprites.Worktop":
-                                Worktop worktopTile = (Worktop) tile;
+                    switch (tileName) {
+
+                        case "Sprites.TomatoStation":
+                            TomatoStation tomatoTile = (TomatoStation) tile;
+                            controlledChef.setInHandsIng(tomatoTile.getIngredient());
+                            break;
+
+                        case "Sprites.BunsStation":
+                            BunsStation bunTile = (BunsStation) tile;
+                            controlledChef.setInHandsIng(bunTile.getIngredient());
+                            break;
+
+                        case "Sprites.OnionStation":
+                            OnionStation onionTile = (OnionStation) tile;
+                            controlledChef.setInHandsIng(onionTile.getIngredient());
+                            break;
+
+                        case "Sprites.SteakStation":
+                            SteakStation steakTile = (SteakStation) tile;
+                            controlledChef.setInHandsIng(steakTile.getIngredient());
+                            break;
+
+                        case "Sprites.LettuceStation":
+                            LettuceStation lettuceTile = (LettuceStation) tile;
+                            controlledChef.setInHandsIng(lettuceTile.getIngredient());
+                            break;
+
+                        case "Sprites.CheeseStation":
+                            CheeseStation cheeseTile = (CheeseStation) tile;
+                            controlledChef.setInHandsIng(cheeseTile.getIngredient());
+                            break;
+
+                        case "Sprites.DoughStation":
+                            DoughStation doughTile = (DoughStation) tile;
+                            controlledChef.setInHandsIng(doughTile.getIngredient());
+                            break;
+
+                        case "Sprites.PotatoStation":
+                            PotatoStation potatoTile = (PotatoStation) tile;
+                            controlledChef.setInHandsIng(potatoTile.getIngredient());
+                            break;
+
+                        case "Sprites.Worktop":
+                            Worktop worktopTile = (Worktop) tile;
+                            if(worktopTile.getIngredient() != null)
+                            {
                                 controlledChef.setInHandsIng(worktopTile.getIngredient());
-                                controlledChef.setChefSkin(controlledChef.getInHandsIng());
                                 worktopTile.setIngredient(null);
-                                break;
-                            case "Sprites.PlateStation":
-                                if(plateStation.getPlate().size() > 0 || plateStation.getCompletedRecipe() != null){
-                                    controlledChef.pickUpItemFrom(tile);
-
-                                }
-
-                        }
-                    } else {
-                        switch (tileName) {
-                            case "Sprites.Bin":
-                                controlledChef.setInHandsRecipe(null);
-                                controlledChef.setInHandsIng(null);
-                                controlledChef.setChefSkin(null);
-                                break;
-
-                            case "Sprites.ChoppingBoard":
-                                if(controlledChef.getInHandsIng() != null){
-                                    if(controlledChef.getInHandsIng().prepareTime > 0){
-                                        controlledChef.setUserControlChef(false);
-                                    }
-                                }
-                               break;
-
-                            case "Sprites.Worktop":
-                                Worktop worktopTile = (Worktop) tile;
-                                if(controlledChef.getInHandsIng() != null && worktopTile.getIngredient() == null)
-                                {
-                                    worktopTile.setIngredient(controlledChef.getInHandsIng());
-                                    controlledChef.setInHandsIng(null);
-                                    controlledChef.setChefSkin(null);
-                                }
-                                break;
-
-                            case "Sprites.PlateStation":
-                                if (controlledChef.getInHandsRecipe() == null){
-                                controlledChef.dropItemOn(tile, controlledChef.getInHandsIng());
-                                controlledChef.setChefSkin(null);
                             }
-                                break;
+                            else if (controlledChef.getInHandsIng() != null) {
+                                worktopTile.setIngredient(controlledChef.getInHandsIng());
+                                controlledChef.setInHandsIng(null);
+                            }
+                            break;
 
-                            case "Sprites.Pan":
-                                if(controlledChef.getInHandsIng() != null) {
-                                    if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0){
-                                        controlledChef.setUserControlChef(false);
+                        case "Sprites.Bin":
+                            controlledChef.setInHandsIng(null);
+                            break;
+
+                        case "Sprites.ChoppingBoard":
+                            if (controlledChef.getInHandsIng() != null) {
+                                if (controlledChef.getInHandsIng().prepareTime > 0) {
+                                    controlledChef.setUserControlChef(false);
+                                }
+                            }
+                            break;
+
+                        case "Sprites.PlateStation":
+                            if (plateStation.getPlate().size() > 0 || plateStation.getCompletedRecipe() != null) {
+                                controlledChef.pickUpItemFrom(tile);
+                            }
+                            else if (controlledChef.getInHandsRecipe() == null) {
+                                controlledChef.dropItemOn(tile, controlledChef.getInHandsIng());
+                            }
+                            break;
+
+                        case "Sprites.Pan":
+                            if (controlledChef.getInHandsIng() != null) {
+                                if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0) {
+                                    controlledChef.setUserControlChef(false);
+                                }
+                            }
+
+                            break;
+                        case "Sprites.CompletedDishStation":
+                            if (controlledChef.getInHandsRecipe() != null) {
+                                if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(0).recipe.getClass())) {
+                                    controlledChef.dropItemOn(tile);
+                                    ordersArray.get(0).orderComplete = true;
+                                    if (ordersArray.size() == 1) {
+                                        scenarioComplete = Boolean.TRUE;
                                     }
                                 }
+                            }
+                            break;
 
-                                break;
-                            case "Sprites.CompletedDishStation":
-                                if (controlledChef.getInHandsRecipe() != null){
-                                    if(controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(0).recipe.getClass())){
-                                        controlledChef.dropItemOn(tile);
-                                        ordersArray.get(0).orderComplete = true;
-                                        controlledChef.setChefSkin(null);
-                                        if(ordersArray.size()==1){
-                                            scenarioComplete = Boolean.TRUE;
-                                        }
-                                    }
-                                }
-                                break;
-                        }
                     }
+
 
                 }
             }

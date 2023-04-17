@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.team13.piazzapanic.MainGame;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -60,8 +61,7 @@ public class Chef extends Sprite {
 
     private Fixture whatTouching;
 
-    private Ingredient inHandsIng;
-    private Recipe inHandsRecipe;
+    private ArrayList<Sprite> inHandsStack;
 
     private Boolean userControlChef;
 
@@ -107,8 +107,7 @@ public class Chef extends Sprite {
         putDownWaitTimer = 0;
         startVector = new Vector2(0, 0);
         whatTouching = null;
-        inHandsIng = null;
-        inHandsRecipe = null;
+        inHandsStack = new ArrayList<>();
         userControlChef = true;
         Texture circleTexture = new Texture("Chef/chefIdentifier.png");
         circleSprite = new Sprite(circleTexture);
@@ -130,7 +129,6 @@ public class Chef extends Sprite {
         int vertexSize = 2 + 1 + 2;
         int spriteSize = 4 * vertexSize;
 
-        System.out.println("X: " + getX() + ", Y: " + getY());
         float ingX = getX() + 0.07f;
         float ingY = getY() + 0.175f;
 
@@ -142,11 +140,11 @@ public class Chef extends Sprite {
         {
             if(getInHandsIng() != null)
             {
-                inHandsIng.create(ingX, ingY, (SpriteBatch) batch);
+                getInHandsIng().create(ingX, ingY, (SpriteBatch) batch);
             }
             else if(getInHandsRecipe() != null)
             {
-                inHandsRecipe.create(ingX, ingY, (SpriteBatch) batch);
+                getInHandsRecipe().create(ingX, ingY, (SpriteBatch) batch);
             }
         }
     }
@@ -161,9 +159,13 @@ public class Chef extends Sprite {
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         currentSkin = getSkin(dt);
         setRegion(currentSkin);
+
+        Ingredient inHandsIng = getInHandsIng();
+        Recipe inHandsRecipe = getInHandsRecipe();
+
         switch (currentState) {
             case UP:
-                if (this.inHandsIng == null && this.inHandsRecipe == null) {
+                if (getInHandsStackSize() == 0) {
                     notificationX = b2body.getPosition().x - (1.75f / MainGame.PPM);
                     notificationY = b2body.getPosition().y - (7.7f / MainGame.PPM);
                 } else {
@@ -172,7 +174,7 @@ public class Chef extends Sprite {
                 }
                 break;
             case DOWN:
-                if (this.inHandsIng == null && this.inHandsRecipe == null) {
+                if (getInHandsStackSize() == 0) {
                     notificationX = b2body.getPosition().x + (0.95f / MainGame.PPM);
                     notificationY = b2body.getPosition().y - (5.015f / MainGame.PPM);
                 } else {
@@ -181,7 +183,7 @@ public class Chef extends Sprite {
                 }
                 break;
             case LEFT:
-                if (this.inHandsIng == null && this.inHandsRecipe == null) {
+                if (getInHandsStackSize() == 0) {
                     notificationX = b2body.getPosition().x;
                     notificationY = b2body.getPosition().y - (5.015f / MainGame.PPM);
                 } else {
@@ -190,7 +192,7 @@ public class Chef extends Sprite {
                 }
                 break;
             case RIGHT:
-                if (this.inHandsIng == null && this.inHandsRecipe == null) {
+                if (getInHandsStackSize() == 0) {
                     notificationX = b2body.getPosition().x + (0.5f / MainGame.PPM);
                     notificationY = b2body.getPosition().y - (5.015f / MainGame.PPM);
                 } else {
@@ -388,16 +390,16 @@ public class Chef extends Sprite {
      */
 
     public void displayIngStatic(SpriteBatch batch) {
-        Gdx.app.log("", inHandsIng.toString());
+        Gdx.app.log("", getInHandsIng().toString());
         if (whatTouching != null && !chefOnChefCollision) {
             InteractiveTileObject tile = (InteractiveTileObject) whatTouching.getUserData();
             if (tile instanceof ChoppingBoard) {
                 ChoppingBoard tileNew = (ChoppingBoard) tile;
-                inHandsIng.create(tileNew.getX() - (0.5f / MainGame.PPM), tileNew.getY() - (0.2f / MainGame.PPM), batch);
+                getInHandsIng().create(tileNew.getX() - (0.5f / MainGame.PPM), tileNew.getY() - (0.2f / MainGame.PPM), batch);
                 setChefSkin(null);
             } else if (tile instanceof Pan) {
                 Pan tileNew = (Pan) tile;
-                inHandsIng.create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
+                getInHandsIng().create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
                 setChefSkin(null);
             }
         }
@@ -463,13 +465,42 @@ public class Chef extends Sprite {
         }
     }
 
+
+    /**
+     * Get the size of the in-hand stack
+     *
+     * @return the size of the in-hand stack
+     */
+    public int getInHandsStackSize () {
+        return inHandsStack.size();
+    }
+
+
+    /**
+     * Returns the top item in the chef's stack
+     * @return the top element of the stack, in Object form.
+     */
+    private Object peekInHandsStack() {
+        if(getInHandsStackSize() > 0)
+        {
+            return inHandsStack.get(0);
+        }
+        return null;
+    }
+
+
     /**
      * Get the ingredient that the chef is holding
      *
      * @return the ingredient that the chef is holding
      */
     public Ingredient getInHandsIng () {
-        return inHandsIng;
+        Object stackTop = peekInHandsStack();
+        if(stackTop instanceof Ingredient)
+        {
+            return (Ingredient)(stackTop);
+        }
+        return null;
     }
 
     /**
@@ -478,17 +509,30 @@ public class Chef extends Sprite {
      * @return the recipe that the chef is holding
      */
     public Recipe getInHandsRecipe () {
-        return inHandsRecipe;
+        Object stackTop = peekInHandsStack();
+        if(stackTop instanceof Recipe)
+        {
+            return (Recipe)(stackTop);
+        }
+        return null;
     }
 
     /**
-     * Set the ingredient that the chef is holding
+     * Add the ingredient to the top of the chef's holding stack
      *
      * @param ing the ingredient that the chef is holding
      */
     public void setInHandsIng (Ingredient ing){
-        inHandsIng = ing;
-        inHandsRecipe = null;
+        if(ing == null && getInHandsStackSize() > 0)
+        {
+            inHandsStack.remove(0);
+        }
+        else if(ing != null)
+        {
+            inHandsStack.add(0, ing);
+        }
+        setChefSkin(peekInHandsStack());
+        System.out.println(inHandsStack.toString());
     }
 
     /**
@@ -497,8 +541,15 @@ public class Chef extends Sprite {
      * @param recipe the recipe that the chef is holding
      */
     public void setInHandsRecipe (Recipe recipe){
-        inHandsRecipe = recipe;
-        inHandsIng = null;
+        if(recipe == null && getInHandsStackSize() > 0)
+        {
+            inHandsStack.remove(0);
+        }
+        else if(recipe != null)
+        {
+            inHandsStack.add(0, recipe);
+        }
+        setChefSkin(peekInHandsStack());
     }
 
     /**

@@ -32,8 +32,8 @@ public class Worktop extends InteractiveTileObject {
 
 
     /**
-     * Gets the x-coordinate of the plate station.
-     * @return The x-coordinate of the plate station.
+     * Gets the x-coordinate of the worktop.
+     * @return The x-coordinate of the worktop.
      */
     public float getX(){
         return super.bdefNew.position.x;
@@ -41,8 +41,8 @@ public class Worktop extends InteractiveTileObject {
 
 
     /**
-     * Gets the y-coordinate of the plate station.
-     * @return The y-coordinate of the plate station.
+     * Gets the y-coordinate of the worktop.
+     * @return The y-coordinate of the worktop.
      */
     public float getY(){
         return super.bdefNew.position.y;
