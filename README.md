@@ -64,11 +64,20 @@ It's a fun little game with serious software engineering principles.
 <!-- ACKNOWLEDGMENTS -->
 ## Contributers
 
+### Assessment One - Lucky Team 13
 * [Bailey Findlay](https://github.com/bailey-f)
 * [Chenxi Wu](https://github.com/Chenxwu)
 * [Yuxin Wu](https://github.com/Hereward1883)
 * [Elizabeth Edwards](https://github.com/lizzy02g)
 * [Alex McRobie](https://github.com/PovRos)
+
+### Assessment Two - 4/6
+* [Thomas McCarthy](https://github.com/thomasjmmccarthy)
+* [Chris Hartley]
+* [Ehren Osborne]
+* [Ellie Hayward]
+* [Leuay Dahhane]
+* [Yusra Ahmed]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
