@@ -204,59 +204,59 @@ public class PlayScreen implements Screen {
 
                         case "Sprites.TomatoStation":
                             TomatoStation tomatoTile = (TomatoStation) tile;
-                            controlledChef.setInHandsIng(tomatoTile.getIngredient());
+                            controlledChef.pushToStack(tomatoTile.getIngredient());
                             break;
 
                         case "Sprites.BunsStation":
                             BunsStation bunTile = (BunsStation) tile;
-                            controlledChef.setInHandsIng(bunTile.getIngredient());
+                            controlledChef.pushToStack(bunTile.getIngredient());
                             break;
 
                         case "Sprites.OnionStation":
                             OnionStation onionTile = (OnionStation) tile;
-                            controlledChef.setInHandsIng(onionTile.getIngredient());
+                            controlledChef.pushToStack(onionTile.getIngredient());
                             break;
 
                         case "Sprites.SteakStation":
                             SteakStation steakTile = (SteakStation) tile;
-                            controlledChef.setInHandsIng(steakTile.getIngredient());
+                            controlledChef.pushToStack(steakTile.getIngredient());
                             break;
 
                         case "Sprites.LettuceStation":
                             LettuceStation lettuceTile = (LettuceStation) tile;
-                            controlledChef.setInHandsIng(lettuceTile.getIngredient());
+                            controlledChef.pushToStack(lettuceTile.getIngredient());
                             break;
 
                         case "Sprites.CheeseStation":
                             CheeseStation cheeseTile = (CheeseStation) tile;
-                            controlledChef.setInHandsIng(cheeseTile.getIngredient());
+                            controlledChef.pushToStack(cheeseTile.getIngredient());
                             break;
 
                         case "Sprites.DoughStation":
                             DoughStation doughTile = (DoughStation) tile;
-                            controlledChef.setInHandsIng(doughTile.getIngredient());
+                            controlledChef.pushToStack(doughTile.getIngredient());
                             break;
 
                         case "Sprites.PotatoStation":
                             PotatoStation potatoTile = (PotatoStation) tile;
-                            controlledChef.setInHandsIng(potatoTile.getIngredient());
+                            controlledChef.pushToStack(potatoTile.getIngredient());
                             break;
 
                         case "Sprites.Worktop":
                             Worktop worktopTile = (Worktop) tile;
                             if(worktopTile.getIngredient() != null)
                             {
-                                controlledChef.setInHandsIng(worktopTile.getIngredient());
+                                controlledChef.pushToStack(worktopTile.getIngredient());
                                 worktopTile.setIngredient(null);
                             }
                             else if (controlledChef.getInHandsIng() != null) {
                                 worktopTile.setIngredient(controlledChef.getInHandsIng());
-                                controlledChef.setInHandsIng(null);
+                                controlledChef.pushToStack(null);
                             }
                             break;
 
                         case "Sprites.Bin":
-                            controlledChef.setInHandsIng(null);
+                            controlledChef.pushToStack(null);
                             break;
 
                         case "Sprites.ChoppingBoard":

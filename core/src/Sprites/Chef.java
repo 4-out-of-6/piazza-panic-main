@@ -518,38 +518,26 @@ public class Chef extends Sprite {
     }
 
     /**
-     * Add the ingredient to the top of the chef's holding stack
-     *
-     * @param ing the ingredient that the chef is holding
+     * Handles the addition/removal of items to the stack.
+     * @param item the element to add to the stack. If null,
+     * the top item is discarded from the stack, and nothing is
+     * added.
      */
-    public void setInHandsIng (Ingredient ing){
-        if(ing == null && getInHandsStackSize() > 0)
+    public void pushToStack(Sprite item)
+    {
+        System.out.println("Item " + item + " with stack size " + getInHandsStackSize());
+        if(item == null && getInHandsStackSize() > 0)
         {
+            System.out.println("Removing " + inHandsStack.get(0) + " from stack...");
             inHandsStack.remove(0);
         }
-        else if(ing != null)
+        else if(item != null)
         {
-            inHandsStack.add(0, ing);
+            System.out.println("Pushing " + item + " to stack...");
+            inHandsStack.add(0, item);
         }
         setChefSkin(peekInHandsStack());
-        System.out.println(inHandsStack.toString());
-    }
-
-    /**
-     * Set the recipe that the chef is holding
-     *
-     * @param recipe the recipe that the chef is holding
-     */
-    public void setInHandsRecipe (Recipe recipe){
-        if(recipe == null && getInHandsStackSize() > 0)
-        {
-            inHandsStack.remove(0);
-        }
-        else if(recipe != null)
-        {
-            inHandsStack.add(0, recipe);
-        }
-        setChefSkin(peekInHandsStack());
+        System.out.println(inHandsStack.toString() + "\n");
     }
 
     /**
@@ -584,7 +572,7 @@ public class Chef extends Sprite {
         if (station instanceof PlateStation) {
                 ((PlateStation) station).dropItem(ing);
         }
-        setInHandsRecipe(null);
+        pushToStack(null);
     }
 
     /**
@@ -597,7 +585,7 @@ public class Chef extends Sprite {
                 previousInHandRecipe = getInHandsRecipe();
                 completedStation = (CompletedDishStation) station;
             }
-            setInHandsRecipe(null);
+            pushToStack(null);
         }
 
     /**
@@ -610,12 +598,11 @@ public class Chef extends Sprite {
             PlateStation pStation = (PlateStation) station;
             Object item = pStation.pickUpItem();
             if (item instanceof Ingredient) {
-                setInHandsIng((Ingredient) item);
-                setChefSkin(item);
+                pushToStack((Ingredient) item);
             } else if (item instanceof Recipe) {
-                setInHandsRecipe(((Recipe) item));
-                setChefSkin(item);
+                pushToStack(((Recipe) item));
             }
+            setChefSkin(item);
         }
     }
 }
