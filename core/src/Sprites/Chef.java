@@ -6,6 +6,7 @@ import Recipe.Recipe;
 import Recipe.SaladRecipe;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -35,26 +36,20 @@ public class Chef extends Sprite {
     public Vector2 startVector;
     private float waitTimer;
 
+
     private float putDownWaitTimer;
     public boolean chefOnChefCollision;
     private final Texture normalChef;
-    private final Texture bunsChef;
-    private final Texture bunsToastedChef;
-    private final Texture burgerChef;
-    private final Texture lettuceChef;
-    private final Texture onionChef;
-    private final Texture tomatoChef;
-    private final Texture choppedLettuceChef;
-    private final Texture choppedOnionChef;
-    private final Texture choppedTomatoChef;
-    private final Texture pattyChef;
-    private final Texture completedBurgerChef;
-    private final Texture meatChef;
-    private Texture saladChef;
-    private final Texture cheeseChef;
-    private final Texture choppedCheeseChef;
-    private final Texture doughChef;
-    private final Texture potatoChef;
+
+    /**
+     * Updated from old code.
+     * Old implementation required a different chef texture for each ingredient the chef
+     * could be holding. Ingredients are now instead rendered on top of a base chef texture using
+     * an overriden 'draw' method (extended from the Sprite class).
+     */
+    private final Texture ingredientChef;
+
+
 
     public enum State {UP, DOWN, LEFT, RIGHT}
 
@@ -94,24 +89,7 @@ public class Chef extends Sprite {
         initialY = startY / MainGame.PPM;
 
         normalChef = new Texture("Chef/Chef_normal.png");
-        bunsChef = new Texture("Chef/Chef_holding_buns.png");
-        bunsToastedChef = new Texture("Chef/Chef_holding_buns_toasted.png");
-        burgerChef = new Texture("Chef/Chef_holding_burger.png");
-        lettuceChef = new Texture("Chef/Chef_holding_lettuce.png");
-        onionChef = new Texture("Chef/Chef_holding_onion.png");
-        tomatoChef = new Texture("Chef/Chef_holding_tomato.png");
-        choppedLettuceChef = new Texture("Chef/Chef_holding_chopped_lettuce.png");
-        choppedOnionChef = new Texture("Chef/Chef_holding_chopped_onion.png");
-        choppedTomatoChef = new Texture("Chef/Chef_holding_chopped_tomato.png");
-        pattyChef = new Texture("Chef/Chef_holding_patty.png");
-        completedBurgerChef = new Texture("Chef/Chef_holding_front.png");
-        meatChef = new Texture("Chef/Chef_holding_meat.png");
-        saladChef = new Texture("Chef/Chef_holding_salad.png");
-        saladChef = new Texture("Chef/Chef_holding_salad.png");
-        cheeseChef = new Texture("Chef/Chef_holding_salad.png");
-        choppedCheeseChef = new Texture("Chef/Chef_holding_salad.png");
-        doughChef = new Texture("Chef/Chef_holding_salad.png");
-        potatoChef = new Texture("Chef/Chef_holding_salad.png");
+        ingredientChef = new Texture("Chef/Chef_holding_ingredient.png");
 
 
         skinNeeded = normalChef;
@@ -136,6 +114,41 @@ public class Chef extends Sprite {
         circleSprite = new Sprite(circleTexture);
         nextOrderAppearTime = 3;
         completedStation = null;
+    }
+
+
+    /**
+     * Overriden method (extended from Sprite class).
+     * Draws the chef texture to the given batch. Draws their
+     * held ingredient on top.
+     * @param batch The sprite batch to be drawn to.
+     */
+    @Override
+    public void draw (Batch batch) {
+
+        // Replication of static final values in sSprite class
+        int vertexSize = 2 + 1 + 2;
+        int spriteSize = 4 * vertexSize;
+
+        System.out.println("X: " + getX() + ", Y: " + getY());
+        float ingX = getX() + 0.07f;
+        float ingY = getY() + 0.175f;
+
+        // Draw chef
+        batch.draw(getTexture(), getVertices(), 0, spriteSize);
+
+        // Draw chef ingredient / recipe
+        if(skinNeeded != normalChef)
+        {
+            if(getInHandsIng() != null)
+            {
+                inHandsIng.create(ingX, ingY, (SpriteBatch) batch);
+            }
+            else if(getInHandsRecipe() != null)
+            {
+                inHandsRecipe.create(ingX, ingY, (SpriteBatch) batch);
+            }
+        }
     }
 
 
@@ -362,60 +375,10 @@ public class Chef extends Sprite {
     public void setChefSkin(Object item) {
         if (item == null) {
             skinNeeded = normalChef;
-        } else if (item instanceof Lettuce) {
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = choppedLettuceChef;
-            } else {
-                skinNeeded = lettuceChef;
-            }
-        } else if (item instanceof Steak) {
-            if (inHandsIng.isPrepared() && inHandsIng.isCooked()) {
-                skinNeeded = burgerChef;
-            } else if (inHandsIng.isPrepared()) {
-                skinNeeded = pattyChef;
-            } else {
-                skinNeeded = meatChef;
-            }
-        } else if (item instanceof Onion) {
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = choppedOnionChef;
-            } else {
-                skinNeeded = onionChef;
-            }
-        } else if (item instanceof Tomato) {
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = choppedTomatoChef;
-            } else {
-                skinNeeded = tomatoChef;
-            }
-        } else if (item instanceof Bun) {
-            if (inHandsIng.isCooked()) {
-                skinNeeded = bunsToastedChef;
-            } else {
-                skinNeeded = bunsChef;
-            }
-        } else if (item instanceof Cheese){
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = choppedCheeseChef;
-            } else {
-                skinNeeded = cheeseChef;
-            }
-        } else if (item instanceof Dough){
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = doughChef;
-            } else {
-                skinNeeded = normalChef;
-            }
-        } else if (item instanceof Potato){
-            if (inHandsIng.isPrepared()) {
-                skinNeeded = potatoChef;
-            } else {
-                skinNeeded = normalChef;
-            }
-        } else if (item instanceof BurgerRecipe) {
-            skinNeeded = completedBurgerChef;
-        } else if (item instanceof SaladRecipe) {
-            skinNeeded = saladChef;
+        }
+        else
+        {
+            skinNeeded = ingredientChef;
         }
     }
 
