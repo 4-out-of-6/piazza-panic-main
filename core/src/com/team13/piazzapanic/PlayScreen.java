@@ -295,10 +295,11 @@ public class PlayScreen implements Screen {
                          * drop the top item onto the plate.
                          */
                         case "Sprites.PlateStation":
-                            if(plateStation.getRecipeDone() != null ||
+                            if(plateStation.getPlate().size() > 0 &&
+                                    (plateStation.getRecipeDone() != null ||
                                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
                                     Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
-                                    controlledChef.getInHandsStackSize() == 0) {
+                                    controlledChef.getInHandsStackSize() == 0)) {
                                 controlledChef.pickUpItemFrom(tile);
                             }
                             else if (controlledChef.getInHandsIng() != null) {
