@@ -14,6 +14,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -56,6 +57,7 @@ public class PlayScreen implements Screen {
     private final World world;
     private final Chef chef1;
     private final Chef chef2;
+    private final Chef chef3;
 
     private Chef controlledChef;
 
@@ -105,6 +107,7 @@ public class PlayScreen implements Screen {
 
         chef1 = new Chef(this.world, 31.5F,65);
         chef2 = new Chef(this.world, 128,65);
+        chef3 = new Chef(this.world, 79.75F, 65);
         controlledChef = chef1;
         world.setContactListener(new WorldContactListener());
         controlledChef.notificationSetBounds("Down");
@@ -126,7 +129,7 @@ public class PlayScreen implements Screen {
      * it switches the control between the two chefs.
      *
      * If the controlled chef does not have the user control,
-     * the method checks if chef1 or chef2 have the user control and sets the control to that chef.
+     * the method checks if chef1, chef2, or chef3 has the user control and sets the control to that chef.
      *
      * If the controlled chef has the user control,
      * it checks if the 'W', 'A', 'S', or 'D' keys are pressed and sets the velocity of the chef accordingly.
@@ -140,24 +143,37 @@ public class PlayScreen implements Screen {
      */
 
     public void handleInput(float dt){
+        // If all three chefs can move, switch to the next one
         if ((Gdx.input.isKeyJustPressed(Input.Keys.R) &&
                 chef1.getUserControlChef() &&
-                chef2.getUserControlChef())) {
+                chef2.getUserControlChef() &&
+                chef3.getUserControlChef())) {
+            controlledChef.b2body.setLinearVelocity(0, 0);
             if (controlledChef.equals(chef1)) {
-                controlledChef.b2body.setLinearVelocity(0, 0);
                 controlledChef = chef2;
+            } else if(controlledChef.equals(chef2)) {
+                controlledChef = chef3;
             } else {
-                controlledChef.b2body.setLinearVelocity(0, 0);
                 controlledChef = chef1;
             }
         }
+        // If the controlled chef cannot move, switch to the next available one
         if (!controlledChef.getUserControlChef()){
-            if (chef1.getUserControlChef()){
-                controlledChef.b2body.setLinearVelocity(0, 0);
-                controlledChef = chef1;
-            } else if(chef2.getUserControlChef()) {
-                controlledChef.b2body.setLinearVelocity(0, 0);
-                controlledChef = chef2;
+            controlledChef.b2body.setLinearVelocity(0, 0);
+            if(controlledChef.equals(chef1))
+            {
+                if(chef2.getUserControlChef()) { controlledChef = chef2; }
+                else if(chef3.getUserControlChef()) { controlledChef = chef3; }
+            }
+            else if(controlledChef.equals(chef2))
+            {
+                if(chef3.getUserControlChef()) { controlledChef = chef3; }
+                else if(chef1.getUserControlChef()) { controlledChef = chef1; }
+            }
+            else
+            {
+                if(chef1.getUserControlChef()) { controlledChef = chef1; }
+                else if(chef2.getUserControlChef()) { controlledChef = chef2; }
             }
         }
         if (controlledChef.getUserControlChef()) {
@@ -244,13 +260,13 @@ public class PlayScreen implements Screen {
 
                         case "Sprites.Worktop":
                             Worktop worktopTile = (Worktop) tile;
-                            if(worktopTile.getIngredient() != null)
+                            if(worktopTile.getHeldItem() != null)
                             {
-                                controlledChef.pushToStack(worktopTile.getIngredient());
-                                worktopTile.setIngredient(null);
+                                controlledChef.pushToStack(worktopTile.getHeldItem());
+                                worktopTile.setHeldItem(null);
                             }
                             else if (controlledChef.getInHandsIng() != null) {
-                                worktopTile.setIngredient(controlledChef.getInHandsIng());
+                                worktopTile.setHeldItem(controlledChef.getInHandsIng());
                                 controlledChef.pushToStack(null);
                             }
                             break;
@@ -267,11 +283,25 @@ public class PlayScreen implements Screen {
                             }
                             break;
 
+                        /**
+                         * PlateStation interaction logic:
+                         *
+                         * If the plate holds a completed recipe,
+                         * or if the user has just pressed the 'shift' key,
+                         * or if the user is not carrying any ingredients,
+                         * pick up the top item on the plate.
+                         *
+                         * Else, if the user is carrying an ingredient,
+                         * drop the top item onto the plate.
+                         */
                         case "Sprites.PlateStation":
-                            if (plateStation.getPlate().size() > 0 || plateStation.getCompletedRecipe() != null) {
+                            if(plateStation.getRecipeDone() != null ||
+                                    Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
+                                    Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
+                                    controlledChef.getInHandsStackSize() == 0) {
                                 controlledChef.pickUpItemFrom(tile);
                             }
-                            else if (controlledChef.getInHandsRecipe() == null) {
+                            else if (controlledChef.getInHandsIng() != null) {
                                 controlledChef.dropItemOn(tile, controlledChef.getInHandsIng());
                             }
                             break;
@@ -315,6 +345,7 @@ public class PlayScreen implements Screen {
         renderer.setView(gamecam);
         chef1.update(dt);
         chef2.update(dt);
+        chef3.update(dt);
         world.step(1/60f, 6, 2);
 
     }
@@ -400,6 +431,7 @@ public class PlayScreen implements Screen {
         updateOrder();
         chef1.draw(game.batch);
         chef2.draw(game.batch);
+        chef3.draw(game.batch);
         controlledChef.drawNotification(game.batch);
 
         // Render ingredients on the plate
@@ -408,18 +440,23 @@ public class PlayScreen implements Screen {
                 Ingredient ingNew = (Ingredient) ing;
                 ingNew.create(plateStation.getX(), plateStation.getY(),game.batch);
             }
-        } else if (plateStation.getCompletedRecipe() != null){
-            Recipe recipeNew = plateStation.getCompletedRecipe();
+        } else if (plateStation.getRecipeDone() != null){
+            Recipe recipeNew = plateStation.getRecipeDone();
             recipeNew.create(plateStation.getX(), plateStation.getY(), game.batch);
         }
 
         // Render ingredients on the worktops
         for(Worktop w : worktopStations)
         {
-            Ingredient ing = w.getIngredient();
-            if(ing != null)
+            Sprite item = w.getHeldItem();
+            if(item != null)
             {
-                ing.create(w.getX(), w.getY(), game.batch);
+                if(item instanceof Ingredient) {
+                    ((Ingredient)item).create(w.getX(), w.getY(), game.batch);
+                }
+                else if(item instanceof Recipe) {
+                    ((Recipe)item).create(w.getX(), w.getY(), game.batch);
+                }
             }
         }
 
@@ -437,11 +474,21 @@ public class PlayScreen implements Screen {
                 }
             }
         }
+        if (!chef3.getUserControlChef()) {
+            if (chef3.getTouchingTile() != null && chef3.getInHandsIng() != null) {
+                if (chef3.getTouchingTile().getUserData() instanceof InteractiveTileObject) {
+                    chef3.displayIngStatic(game.batch);
+                }
+            }
+        }
         if (chef1.previousInHandRecipe != null){
             chef1.displayIngDynamic(game.batch);
         }
         if (chef2.previousInHandRecipe != null){
             chef2.displayIngDynamic(game.batch);
+        }
+        if (chef3.previousInHandRecipe != null){
+            chef3.displayIngDynamic(game.batch);
         }
         game.batch.end();
     }

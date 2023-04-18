@@ -124,7 +124,7 @@ public class PlateStation extends InteractiveTileObject {
      *
      * @return The completed recipe on the plate, or null if no recipe is completed.
      */
-    public Recipe getCompletedRecipe(){
+    public Recipe getRecipeDone(){
         return recipeDone;
     }
 

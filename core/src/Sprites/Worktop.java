@@ -1,6 +1,7 @@
 package Sprites;
 
 import Ingredients.Ingredient;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -14,20 +15,20 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Worktop extends InteractiveTileObject {
 
-    private Ingredient ingredient;
+    private Sprite heldItem;
 
     public Worktop(World world, TiledMap map, BodyDef bdef, Rectangle rectangle) {
         super(world, map, bdef, rectangle);
         fixture.setUserData(this);
-        ingredient = null;
+        heldItem = null;
     }
 
     /**
      * @return the worktop's stored ingredient.
      */
-    public Ingredient getIngredient()
+    public Sprite getHeldItem()
     {
-        return ingredient;
+        return heldItem;
     }
 
 
@@ -50,10 +51,10 @@ public class Worktop extends InteractiveTileObject {
 
 
     /**
-     * @param ingredient The ingredient to place on the worktop.
+     * @param item The ingredient/recipe to place on the worktop.
      */
-    public void setIngredient(Ingredient ingredient)
+    public void setHeldItem(Sprite item)
     {
-        this.ingredient = ingredient;
+        this.heldItem = item;
     }
 }
