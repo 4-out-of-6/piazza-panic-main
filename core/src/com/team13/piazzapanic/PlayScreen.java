@@ -4,6 +4,7 @@ import Ingredients.Ingredient;
 import Recipe.Recipe;
 import Sprites.*;
 import Recipe.Order;
+import Recipe.RecipeManager;
 import Tools.B2WorldCreator;
 import Tools.WorldContactListener;
 
@@ -295,11 +296,12 @@ public class PlayScreen implements Screen {
                          * drop the top item onto the plate.
                          */
                         case "Sprites.PlateStation":
-                            if(plateStation.getPlate().size() > 0 &&
-                                    (plateStation.getRecipeDone() != null ||
-                                    Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
-                                    Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
-                                    controlledChef.getInHandsStackSize() == 0)) {
+                            if(plateStation.getRecipeDone() != null ||
+                                    (plateStation.getPlate().size() > 0 &&
+                                        (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
+                                        Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) ||
+                                        controlledChef.getInHandsStackSize() == 0)))
+                            {
                                 controlledChef.pickUpItemFrom(tile);
                             }
                             else if (controlledChef.getInHandsIng() != null) {
@@ -355,22 +357,26 @@ public class PlayScreen implements Screen {
      * Creates the orders randomly and adds to an array, updates the HUD.
      */
     public void createOrder() {
-        int randomNum = ThreadLocalRandom.current().nextInt(1, 2 + 1);
-        Texture burger_recipe = new Texture("Food/burger_recipe.png");
-        Texture salad_recipe = new Texture("Food/salad_recipe.png");
+
+        int recipeCount = RecipeManager.getRecipes().length;
+        int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
         Order order;
+        System.out.println("Creating order for index " + randomNum);
 
         for(int i = 0; i<5; i++){
-            if(randomNum==1) {
-                order = new Order(PlateStation.burgerRecipe, burger_recipe);
-            }
-            else {
-                order = new Order(PlateStation.saladRecipe, salad_recipe);
-            }
+            order = new Order(RecipeManager.getRecipeAt(randomNum), RecipeManager.getRecipeTextureAt(randomNum));
             ordersArray.add(order);
-            randomNum = ThreadLocalRandom.current().nextInt(1, 2 + 1);
+            randomNum = ThreadLocalRandom.current().nextInt(1, recipeCount);
         }
         hud.updateOrder(Boolean.FALSE, 1);
+    }
+
+    /**
+     * Adds a new order to the array
+     */
+    public void addNewOrder()
+    {
+
     }
 
     /**

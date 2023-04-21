@@ -25,12 +25,6 @@ public class PlateStation extends InteractiveTileObject {
     /** List of ingredients placed on the plate */
     private final List<Ingredient> plate;
 
-    /** Static recipe for a burger */
-    public static Recipe burgerRecipe;
-
-    /** Static recipe for a salad */
-    public static Recipe saladRecipe;
-
     /** Recipe that has been completed on the plate */
     private Recipe recipeDone;
 
@@ -46,8 +40,6 @@ public class PlateStation extends InteractiveTileObject {
         super(world, map, bdef, rectangle);
         fixture.setUserData(this);
         this.plate = new ArrayList<>();
-        burgerRecipe = new BurgerRecipe();
-        saladRecipe = new SaladRecipe();
         this.recipeDone = null;
     }
 
@@ -66,47 +58,42 @@ public class PlateStation extends InteractiveTileObject {
      * if a recipe is found and set the recipeDone
      */
     public void checkRecipeCreated(){
-        if (plate.size() == burgerRecipe.getIngredients().size()) {
-            boolean burgerSame = true;
-            boolean burgerIngFound;
-            for (Ingredient ing : plate) {
-                burgerIngFound = false;
-                for (int j = 0; j < burgerRecipe.getIngredients().size(); j++) {
-                    if (ing.getClass().toString().equals(burgerRecipe.getIngredients().get(j).getClass().toString())) {
-                        if (ing.isCooked()) {
-                            burgerIngFound = true;
+
+        for(Recipe recipe: RecipeManager.getRecipes())
+        {
+            boolean recipeMatches = true;
+
+            if(plate.size() == recipe.getIngredients().size())
+            {
+                boolean ingFound;
+                for(Ingredient ing : plate)
+                {
+                    ingFound = false;
+
+                    for(int i = 0; i < recipe.getIngredients().size(); i++)
+                    {
+                        if(ing.getClass().toString().equals(recipe.getIngredients().get(i).getClass().toString()))
+                        {
+                            if(ing.isCooked() && ing.isPrepared())
+                            {
+                                ingFound = true;
+                            }
                         }
                     }
-                }
-                if (!burgerIngFound) {
-                    burgerSame = false;
-                }
-            }
-            if (burgerSame) {
-                plate.clear();
-                recipeDone = burgerRecipe;
-            }
-        }
-        if (plate.size() == saladRecipe.getIngredients().size()) {
-            boolean saladSame = true;
-            boolean saladIngFound;
-            for (Ingredient ing : plate) {
-                saladIngFound = false;
-                for (int j = 0; j < saladRecipe.getIngredients().size(); j++) {
-                    if (ing.getClass().toString().equals(saladRecipe.getIngredients().get(j).getClass().toString())) {
-                        if (ing.isPrepared()) {
-                            saladIngFound = true;
-                        }
+                    if(ingFound == false)
+                    {
+                        recipeMatches = false;
+                        break;
                     }
                 }
-                if (!saladIngFound) {
-                    saladSame = false;
+                if(recipeMatches)
+                {
+                    plate.clear();
+                    recipeDone = recipe;
+                    break;
                 }
             }
-            if (saladSame) {
-                plate.clear();
-                recipeDone = saladRecipe;
-            }
+
         }
     }
 

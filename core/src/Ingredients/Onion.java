@@ -14,7 +14,10 @@ public class Onion extends Ingredient{
 
     public Onion(float prepareTime, float cookTime) {
         super(prepareTime, cookTime);
+        super.setCooked();
         super.tex = new ArrayList<>();
+
+        super.tex.add(null);
         super.tex.add(new Texture("Food/Onion.png"));
         super.tex.add(new Texture("Food/Chopped_onion.png"));
     }

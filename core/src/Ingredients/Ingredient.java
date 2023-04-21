@@ -103,7 +103,7 @@ public abstract class Ingredient extends Sprite {
     private int findCorrectSkin(){
         if (isPrepared() && isCooked()){
             return 2;
-        } else if (isPrepared()){
+        } else if (isPrepared() || isCooked()){
             return 1;
         } else {
             return 0;
