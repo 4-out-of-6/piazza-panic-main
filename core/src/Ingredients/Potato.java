@@ -15,6 +15,7 @@ public class Potato extends Ingredient{
     public Potato(float prepareTime, float cookTime) {
         super(prepareTime, cookTime);
         super.setPrepared();
+        super.cookInOven = true;
         super.tex = new ArrayList<>();
 
         super.tex.add(null);

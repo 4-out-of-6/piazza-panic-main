@@ -219,19 +219,37 @@ public class Chef extends Sprite {
             waitTimer += dt;
             if (waitTimer > inHandsIng.prepareTime) {
                 inHandsIng.prepareTime = 0;
-                inHandsIng.setPrepared();
+                if(inHandsIng.getRecipeOverride() != null)
+                {
+                    Recipe temp = inHandsIng.getRecipeOverride();
+                    pushToStack(null);
+                    pushToStack(temp);
+                }
+                else
+                {
+                    inHandsIng.setPrepared();
+                }
                 userControlChef = true;
+                setChefSkin(peekInHandsStack());
                 waitTimer = 0;
-                setChefSkin(inHandsIng);
             }
         } else if (!userControlChef && !chefOnChefCollision && getInHandsIng().isPrepared() && inHandsIng.cookTime > 0) {
             waitTimer += dt;
             if (waitTimer > inHandsIng.cookTime) {
                 inHandsIng.cookTime = 0;
-                inHandsIng.setCooked();
+                if(inHandsIng.getRecipeOverride() != null)
+                {
+                    Recipe temp = inHandsIng.getRecipeOverride();
+                    pushToStack(null);
+                    pushToStack(temp);
+                }
+                else
+                {
+                    inHandsIng.setCooked();
+                }
                 userControlChef = true;
+                setChefSkin(peekInHandsStack());
                 waitTimer = 0;
-                setChefSkin(inHandsIng);
             }
         }
     }
@@ -354,24 +372,7 @@ public class Chef extends Sprite {
      *
      * The skin is set based on the following cases:
      * - if item is null, then the skin is set to normalChef
-     * - if item is a Lettuce, then the skin is set to
-     *    - choppedLettuceChef if the lettuce is prepared
-     *    - lettuceChef if the lettuce is not prepared
-     * - if item is a Steak, then the skin is set to
-     *    - burgerChef if the steak is prepared and cooked
-     *    - pattyChef if the steak is prepared but not cooked
-     *    - meatChef if the steak is not prepared
-     * - if item is an Onion, then the skin is set to
-     *    - choppedOnionChef if the onion is prepared
-     *    - onionChef if the onion is not prepared
-     * - if item is a Tomato, then the skin is set to
-     *    - choppedTomatoChef if the tomato is prepared
-     *    - tomatoChef if the tomato is not prepared
-     * - if item is a Bun, then the skin is set to
-     *    - bunsToastedChef if the bun is cooked
-     *    - bunsChef if the bun is not cooked
-     * - if item is a BurgerRecipe, then the skin is set to completedBurgerChef
-     * - if item is a SaladRecipe, then the skin is set to saladChef
+     * - else then the skin is set to ingredientChef
      */
 
     public void setChefSkin(Object item) {
@@ -401,6 +402,10 @@ public class Chef extends Sprite {
                 Pan tileNew = (Pan) tile;
                 getInHandsIng().create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
                 setChefSkin(null);
+            }
+            else if(tile instanceof Oven) {
+                Oven tileNew = (Oven) tile;
+                getInHandsIng().create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
             }
         }
     }
@@ -480,7 +485,7 @@ public class Chef extends Sprite {
      * Returns the top item in the chef's stack
      * @return the top element of the stack, in Object form.
      */
-    private Object peekInHandsStack() {
+    public Object peekInHandsStack() {
         if(getInHandsStackSize() > 0)
         {
             return inHandsStack.get(0);

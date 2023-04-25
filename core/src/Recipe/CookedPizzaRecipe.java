@@ -14,13 +14,10 @@ import java.util.ArrayList;
  */
 
 
-public class PizzaRecipe extends Recipe{
+public class CookedPizzaRecipe extends Recipe{
 
-    public PizzaRecipe(){
+    public CookedPizzaRecipe(){
         super.ingredients = new ArrayList<>();
-        ingredients.add(new Dough(0, 0));
-        ingredients.add(new Tomato(0, 0));
-        ingredients.add(new Cheese(0,0));
-        completedImg = new Texture("Food/Pizza.png");
+        completedImg = new Texture("Food/Cooked_pizza.png");
     }
 }

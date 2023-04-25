@@ -1,5 +1,6 @@
 package Ingredients;
 
+import Recipe.Recipe;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +17,14 @@ public abstract class Ingredient extends Sprite {
      * The time required to cook the ingredient.
      */
     public float cookTime;
+    /**
+     * A flag to indicate if the ingredient needs to be pan-fried or cooked in the oven
+     */
+    public boolean cookInOven;
+    /**
+     * An overriding value that replaces the ingredient with a finished Recipe when prepared
+     */
+    private Recipe recipeOverride;
     /**
      * A flag to indicate whether the ingredient has been cooked.
      */
@@ -34,10 +43,24 @@ public abstract class Ingredient extends Sprite {
      *
      * @param prepareTime The time required to prepare the ingredient.
      * @param cookTime The time required to cook the ingredient.
+     * @param cookInOven Whether the ingredient is cooked in an oven (=true) or pan (=false). Default = false
      */
+    public Ingredient(float prepareTime, float cookTime, boolean cookInOven)
+    {
+        this.prepareTime = prepareTime;
+        this.cookTime = cookTime;
+        this.cookInOven = cookInOven;
+        this.recipeOverride = null;
+        this.amICooked = false;
+        this.amIPrepared = false;
+        this.tex = null;
+    }
+
     public Ingredient(float prepareTime, float cookTime) {
         this.prepareTime = prepareTime;
         this.cookTime = cookTime;
+        this.cookInOven = false;
+        this.recipeOverride = null;
         this.amICooked = false;
         this.amIPrepared = false;
         this.tex = null;
@@ -50,6 +73,17 @@ public abstract class Ingredient extends Sprite {
     public void setPrepared() {
         amIPrepared = true;
     }
+
+    /**
+     * Sets the recipe that overrides the prepared ingredient.
+     * When preparing an ingredient completes a dish, it needs to be overridden in the
+     * chef's stack with the corresponding recipe (e.g. cooking an Uncooked Pizza
+     * ingredient turns it into a Cooked Pizza - a completed dish and therefore a
+     * Recipe). See Chef class for full implementation
+     */
+    public void setRecipeOverride(Recipe recipe) { recipeOverride = recipe; }
+
+    public Recipe getRecipeOverride() { return recipeOverride; }
 
     /**
      * Returns the value of the flag indicating whether the ingredient has been prepared.

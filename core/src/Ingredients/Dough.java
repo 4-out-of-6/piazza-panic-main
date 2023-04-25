@@ -14,12 +14,13 @@ public class Dough extends Ingredient{
 
      */
 
-    // TODO Implement prepared dough (currently cooking dough results in a crash)
     public Dough(float prepareTime, float cookTime) {
         super(prepareTime, cookTime);
         super.setPrepared();
+        super.setCooked();
         super.tex = new ArrayList<>();
 
+        super.tex.add(null);
         super.tex.add(null);
         super.tex.add(new Texture("Food/Dough.png"));
     }
