@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Game;
 
+import java.awt.*;
+
 public class MainGame extends Game {
 
 	/**
@@ -33,15 +35,23 @@ public class MainGame extends Game {
 	public static final float PPM = 100;
 	public SpriteBatch batch;
 	public boolean isPlayScreen;
+	private MenuScreen menuScreen;
 	private PlayScreen playScreen;
 	private StartScreen startScreen;
+	public boolean isMenuScreen;
 
 	public MainGame(){
 		isPlayScreen = false;
+		isMenuScreen = true;
+	}
+
+	public void setCustomerCount(int customers){
+		playScreen.customerTotal = customers;
 	}
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
+		menuScreen = new MenuScreen(this);
 		startScreen = new StartScreen(this);
 		playScreen = new PlayScreen(this);
 	}
@@ -49,13 +59,17 @@ public class MainGame extends Game {
 	@Override
 	public void render() {
 		super.render();
-		if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)){
-			isPlayScreen = !isPlayScreen;
-		}
-		if (isPlayScreen) {
-			setScreen(playScreen);
-		} else {
-			setScreen(startScreen);
+		if (isMenuScreen) {
+			setScreen(menuScreen);
+		} else{
+			if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)){
+				isPlayScreen = !isPlayScreen;
+			}
+			if (isPlayScreen) {
+				setScreen(playScreen);
+			} else {
+				setScreen(startScreen);
+			}
 		}
 	}
 

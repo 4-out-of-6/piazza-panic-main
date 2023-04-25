@@ -21,8 +21,10 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +72,9 @@ public class PlayScreen implements Screen {
 
 
     public Boolean scenarioComplete;
-    public Boolean createdOrder;
+    public int customerTotal;
+    private int customerCounter = 0;
+    private int orderCounter = 0;
 
     public static float trayX;
     public static float trayY;
@@ -80,6 +84,7 @@ public class PlayScreen implements Screen {
     private float timeSecondsCount = 0f;
 
     private int orderViewed = 0;
+    private float orderTimeGap = 0;
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -93,7 +98,6 @@ public class PlayScreen implements Screen {
         this.game = game;
         scenarioComplete = Boolean.FALSE;
         RecipeManager.initialise();
-        createdOrder = Boolean.FALSE;
         gamecam = new OrthographicCamera();
         // FitViewport to maintain aspect ratio whilst scaling to screen size
         gameport = new FitViewport(MainGame.V_WIDTH / MainGame.PPM, MainGame.V_HEIGHT / MainGame.PPM, gamecam);
@@ -392,15 +396,12 @@ public class PlayScreen implements Screen {
         Order order;
         System.out.println("Creating order for index " + randomNum);
 
-        for(int i = 0; i<5; i++){
-            order = new Order(
-                    RecipeManager.getCompleteRecipeAt(randomNum),
-                    RecipeManager.getRecipeTextureAt(randomNum),
-                    RecipeManager.getMinRecipeCounterAt(randomNum) * 2
-            );
-            ordersArray.add(order);
-            randomNum = ThreadLocalRandom.current().nextInt(1, recipeCount);
-        }
+        order = new Order(
+                RecipeManager.getCompleteRecipeAt(randomNum),
+                RecipeManager.getRecipeTextureAt(randomNum),
+                RecipeManager.getMinRecipeCounterAt(randomNum) * 2
+        );
+        ordersArray.add(order);
         hud.updateOrder(Boolean.FALSE, 1);
     }
 
@@ -448,10 +449,18 @@ public class PlayScreen implements Screen {
         timeSeconds +=Gdx.graphics.getRawDeltaTime();
         timeSecondsCount += Gdx.graphics.getDeltaTime();
 
-        if(Math.round(timeSecondsCount) == 5 && createdOrder == Boolean.FALSE){
-            createdOrder = Boolean.TRUE;
+        //Adds an order every 15 seconds and if the order list isn't full
+        if(orderTimeGap <= timeSecondsCount && orderCounter != customerTotal && ordersArray.size() <= 3){
             createOrder();
+            orderCounter++;
+            orderTimeGap = timeSecondsCount + 15;
         }
+
+        //Check win condition
+        if(customerCounter == customerTotal) {
+            scenarioComplete = Boolean.TRUE;
+        }
+
         float period = 1f;
         if(timeSeconds > period) {
             timeSeconds -= period;
