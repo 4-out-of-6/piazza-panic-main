@@ -78,6 +78,8 @@ public class PlayScreen implements Screen {
 
     private float timeSecondsCount = 0f;
 
+    private int viewingOrder = 0;
+
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
      * creates and initializes game camera and viewport,
@@ -210,6 +212,20 @@ public class PlayScreen implements Screen {
         }
         if (controlledChef.b2body.getLinearVelocity().y < 0){
             controlledChef.notificationSetBounds("Down");
+        }
+
+
+        // Handle input for keys 1-3, which show the different orders
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            viewingOrder = 0;
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            if(ordersArray.size() > 0) { viewingOrder = 1; }
+            else { viewingOrder = 0; }
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            if(ordersArray.size() > 1) { viewingOrder = 2; }
+            else { viewingOrder = Math.max(0, ordersArray.size() - 1); }
         }
 
 
@@ -397,7 +413,7 @@ public class PlayScreen implements Screen {
                 hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
                 return;
             }
-            ordersArray.get(0).create(trayX, trayY, game.batch);
+            ordersArray.get(viewingOrder).create(trayX, trayY, game.batch);
         }
     }
 
