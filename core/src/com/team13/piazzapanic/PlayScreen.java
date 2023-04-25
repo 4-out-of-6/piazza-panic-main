@@ -393,7 +393,11 @@ public class PlayScreen implements Screen {
         System.out.println("Creating order for index " + randomNum);
 
         for(int i = 0; i<5; i++){
-            order = new Order(RecipeManager.getCompleteRecipeAt(randomNum), RecipeManager.getRecipeTextureAt(randomNum));
+            order = new Order(
+                    RecipeManager.getCompleteRecipeAt(randomNum),
+                    RecipeManager.getRecipeTextureAt(randomNum),
+                    RecipeManager.getMinRecipeCounterAt(randomNum) * 2
+            );
             ordersArray.add(order);
             randomNum = ThreadLocalRandom.current().nextInt(1, recipeCount);
         }
@@ -421,7 +425,7 @@ public class PlayScreen implements Screen {
                     break;
                 }
             }
-            ordersArray.get(orderViewed).create(trayX, trayY, game.batch);
+            ordersArray.get(orderViewed).create(Gdx.graphics.getDeltaTime(), trayX, trayY, game.batch);
         }
         OrderTickets.create(ordersArray, orderViewed, game.batch);
     }

@@ -17,17 +17,28 @@ public class Order extends Sprite {
     /** The image representing this order. */
     public Texture orderImg;
 
+    /** A counter. When <=0, a reputation point is lost */
+    private float countdownTimer;
+    private float initialTimer;
+
+
     /**
      * Constructor for the `Order` class.
      *
      * @param recipe The `Recipe` object associated with this order.
      * @param orderImg The image representing this order.
      */
-    public Order(Recipe recipe, Texture orderImg) {
+    public Order(Recipe recipe, Texture orderImg, float countdownTimer) {
         this.recipe = recipe;
         this.orderImg = orderImg;
+        this.countdownTimer = countdownTimer;
+        this.initialTimer = countdownTimer;
         this.orderComplete = false;
     }
+
+    public float getCountdownTimer() { return countdownTimer; }
+
+    public float getInitialTimer() { return initialTimer; }
 
     /**
      * Returns the recipe asked for in the order
@@ -42,7 +53,7 @@ public class Order extends Sprite {
      * @param y The y coordinate of the order image.
      * @param batch The `SpriteBatch` to add the order image to.
      */
-    public void create(float x, float y, SpriteBatch batch) {
+    public void create(float dt, float x, float y, SpriteBatch batch) {
         Sprite sprite = new Sprite(orderImg);
         float adjustedX = x - (8 / MainGame.PPM);
         float adjustedY = y + (7 / MainGame.PPM);
@@ -52,6 +63,15 @@ public class Order extends Sprite {
         } else {
             sprite.setBounds(adjustedX, adjustedY, 33 / MainGame.PPM, 28 / MainGame.PPM);
             sprite.draw(batch);
+        }
+    }
+
+    public void decrementCounterBy(float time)
+    {
+        countdownTimer -= time;
+        if(countdownTimer <= 0)
+        {
+            // TODO: Implement fail state & loss of reputation point
         }
     }
 }

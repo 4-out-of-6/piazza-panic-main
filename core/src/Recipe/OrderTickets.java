@@ -1,5 +1,6 @@
 package Recipe;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -44,6 +45,26 @@ public class OrderTickets extends Sprite {
                     selectSprite.setBounds(ticketX, ticketY, 16 / MainGame.PPM, 10 / MainGame.PPM);
                     selectSprite.draw(batch);
                 }
+
+                // Decrement the counter by the time elapsed since the last frame
+                ordersArray.get(i).decrementCounterBy(Gdx.graphics.getDeltaTime());
+
+                // Draw timer background
+                Sprite timerBackground = new Sprite(new Texture("Timer/timer_background.png"));
+                float timerX = ticketX - (4 / MainGame.PPM);
+                float timerY = ticketY + (1 / MainGame.PPM);
+                timerBackground.setBounds(timerX, timerY, 1 / MainGame.PPM, 8 / MainGame.PPM);
+                timerBackground.draw(batch);
+
+                // Draw timer fill
+                float percentageFull = Math.max(0, ordersArray.get(i).getCountdownTimer() / ordersArray.get(i).getInitialTimer());
+                Texture timerFill;
+                if(percentageFull < 0.25f) { timerFill = new Texture("Timer/timer_foreground_danger.png"); }
+                else if(percentageFull < 0.5f) { timerFill = new Texture("Timer/timer_foreground_warning.png"); }
+                else { timerFill = new Texture("Timer/timer_foreground_full.png"); }
+                Sprite timerForeground = new Sprite(timerFill);
+                timerForeground.setBounds(timerX, timerY, 1 / MainGame.PPM, (8 * percentageFull) / MainGame.PPM);
+                timerForeground.draw(batch);
             }
         }
 

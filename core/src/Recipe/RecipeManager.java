@@ -27,6 +27,14 @@ public class RecipeManager {
             new Texture("Food/jacket_potato_recipe.png")
     };
 
+    /* Stores the minimum countdown time for each 'complete' recipe */
+    private static float[] minRecipeCounters = {
+            25,
+            25,
+            30,
+            20
+    };
+
     private static Recipe[] completeRecipes;
 
     /** Initialises the RecipeManager */
@@ -61,6 +69,13 @@ public class RecipeManager {
      * @return the Texture at the given index
      */
     public static Texture getRecipeTextureAt(int index) { return recipeTextures[index]; }
+
+    /**
+     * Returns the minimum required countdown time of the Recipe at the given index
+     * @param index the index of the countdown time to get
+     * @return the minimum time required to prepare the Recipe
+     */
+    public static float getMinRecipeCounterAt(int index) { return minRecipeCounters[index]; }
 
     /**
      * Gets all the recipes implemented in the game
