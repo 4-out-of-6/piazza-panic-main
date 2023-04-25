@@ -11,5 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("PiazzaPanic");
 		new Lwjgl3Application(new MainGame(), config);
+		// test comment to force a commit.
 	}
 }
