@@ -20,8 +20,7 @@ public class Recipe extends Sprite {
     /**
      * Constructor for the Recipe class.
      */
-    public Recipe(){
-    }
+    public Recipe(){}
 
     /**
      * Returns the ArrayList of ingredients used in the recipe.
@@ -30,6 +29,13 @@ public class Recipe extends Sprite {
     public ArrayList<Ingredient> getIngredients(){
         return ingredients;
     }
+
+    /**
+     * Returns a new instance of the ingredient equivalent of the recipe, if one is set.
+     * Should be overridden where required.
+     * @return An Ingredient object.
+     */
+    public Ingredient getIngredientOverride() { return null; }
 
     /**
      * Creates the completed dish sprite and draws it to the screen.

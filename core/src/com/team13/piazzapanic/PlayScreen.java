@@ -89,6 +89,7 @@ public class PlayScreen implements Screen {
     public PlayScreen(MainGame game){
         this.game = game;
         scenarioComplete = Boolean.FALSE;
+        RecipeManager.initialise();
         createdOrder = Boolean.FALSE;
         gamecam = new OrthographicCamera();
         // FitViewport to maintain aspect ratio whilst scaling to screen size
@@ -266,8 +267,8 @@ public class PlayScreen implements Screen {
                                 controlledChef.pushToStack(worktopTile.getHeldItem());
                                 worktopTile.setHeldItem(null);
                             }
-                            else if (controlledChef.getInHandsIng() != null) {
-                                worktopTile.setHeldItem(controlledChef.getInHandsIng());
+                            else if (controlledChef.peekInHandsStack() != null) {
+                                worktopTile.setHeldItem((Sprite) controlledChef.peekInHandsStack());
                                 controlledChef.pushToStack(null);
                             }
                             break;
@@ -311,12 +312,21 @@ public class PlayScreen implements Screen {
 
                         case "Sprites.Pan":
                             if (controlledChef.getInHandsIng() != null) {
-                                if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0) {
+                                if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven == false) {
+                                    controlledChef.setUserControlChef(false);
+                                }
+                            }
+                            break;
+
+                        case "Sprites.Oven":
+                            if (controlledChef.getInHandsIng() != null) {
+                                if(controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven)
+                                {
                                     controlledChef.setUserControlChef(false);
                                 }
                             }
 
-                            break;
+
                         case "Sprites.CompletedDishStation":
                             if (controlledChef.getInHandsRecipe() != null) {
                                 if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(0).recipe.getClass())) {
@@ -358,25 +368,17 @@ public class PlayScreen implements Screen {
      */
     public void createOrder() {
 
-        int recipeCount = RecipeManager.getRecipes().length;
+        int recipeCount = RecipeManager.getCompleteRecipes().length;
         int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
         Order order;
         System.out.println("Creating order for index " + randomNum);
 
         for(int i = 0; i<5; i++){
-            order = new Order(RecipeManager.getRecipeAt(randomNum), RecipeManager.getRecipeTextureAt(randomNum));
+            order = new Order(RecipeManager.getCompleteRecipeAt(randomNum), RecipeManager.getRecipeTextureAt(randomNum));
             ordersArray.add(order);
             randomNum = ThreadLocalRandom.current().nextInt(1, recipeCount);
         }
         hud.updateOrder(Boolean.FALSE, 1);
-    }
-
-    /**
-     * Adds a new order to the array
-     */
-    public void addNewOrder()
-    {
-
     }
 
     /**

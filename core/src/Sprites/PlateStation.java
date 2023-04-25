@@ -143,7 +143,15 @@ public class PlateStation extends InteractiveTileObject {
         if (recipeDone != null){
             Recipe temp = recipeDone;
             recipeDone = null;
-            return temp;
+            if(temp.getIngredientOverride() != null)
+            {
+                // Create a new instance of the ingredient using the Ingredient class' copy constructor
+                return temp.getIngredientOverride();
+            }
+            else
+            {
+                return temp;
+            }
         } else {
             Ingredient item = plate.get(plate.size()-1);
             plate.remove(plate.size()-1);

@@ -91,6 +91,8 @@ public class B2WorldCreator {
                     new SteakStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan2")) {
                     new Pan(world, map, bdef, rectangle);
+                } else if(mapObject.getName().equals("oven")) {
+                    new Oven(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("completed_dish")) {
                     new CompletedDishStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("order_top")) {

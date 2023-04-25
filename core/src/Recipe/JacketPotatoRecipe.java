@@ -23,6 +23,6 @@ public class JacketPotatoRecipe extends Recipe{
         super.ingredients = new ArrayList<>();
         ingredients.add(new Potato(0, 0));
         ingredients.add(new Cheese(0, 0));
-        //completedImg = new Texture("Food/Burger.png");
+        completedImg = new Texture("Food/Jacket_potato.png");
     }
 }
