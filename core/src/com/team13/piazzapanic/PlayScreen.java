@@ -5,6 +5,7 @@ import Recipe.Recipe;
 import Sprites.*;
 import Recipe.Order;
 import Recipe.RecipeManager;
+import Recipe.OrderTickets;
 import Tools.B2WorldCreator;
 import Tools.WorldContactListener;
 
@@ -14,7 +15,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -77,6 +78,8 @@ public class PlayScreen implements Screen {
     private float timeSeconds = 0f;
 
     private float timeSecondsCount = 0f;
+
+    private int orderViewed = 0;
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -212,6 +215,19 @@ public class PlayScreen implements Screen {
             controlledChef.notificationSetBounds("Down");
         }
 
+        // Check for a change in the order being viewed
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            orderViewed = 0;
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            if(ordersArray.size() > 0) { orderViewed = 1; }
+            else { orderViewed = 0; }
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            if(ordersArray.size() > 1) { orderViewed = 2; }
+            else { orderViewed = Math.max(0, ordersArray.size() - 1); }
+        }
+
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.E)){
                 if(controlledChef.getTouchingTile() != null){
@@ -329,11 +345,14 @@ public class PlayScreen implements Screen {
 
                         case "Sprites.CompletedDishStation":
                             if (controlledChef.getInHandsRecipe() != null) {
-                                if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(0).recipe.getClass())) {
-                                    controlledChef.dropItemOn(tile);
-                                    ordersArray.get(0).orderComplete = true;
-                                    if (ordersArray.size() == 1) {
-                                        scenarioComplete = Boolean.TRUE;
+                                for(int i = 0; i < Math.min(3, ordersArray.size()); i++) {
+                                    if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(i).recipe.getClass())) {
+                                        controlledChef.dropItemOn(tile);
+                                        ordersArray.get(i).orderComplete = true;
+                                        if (ordersArray.size() == 1) {
+                                            scenarioComplete = Boolean.TRUE;
+                                        }
+                                        break;
                                     }
                                 }
                             }
@@ -391,14 +410,20 @@ public class PlayScreen implements Screen {
             return;
         }
         if(ordersArray.size() != 0) {
-            if (ordersArray.get(0).orderComplete) {
-                hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
-                ordersArray.remove(0);
-                hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
-                return;
+            for(int i = 0; i < ordersArray.size(); i++)
+            {
+                if (ordersArray.get(i).orderComplete) {
+                    hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
+                    ordersArray.remove(i);
+                    orderViewed = Math.max(0, orderViewed - 1);
+                    hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
+                    // We can break here, as only one order will be completed in any one frame
+                    break;
+                }
             }
-            ordersArray.get(0).create(trayX, trayY, game.batch);
+            ordersArray.get(orderViewed).create(trayX, trayY, game.batch);
         }
+        OrderTickets.create(ordersArray, orderViewed, game.batch);
     }
 
     /**

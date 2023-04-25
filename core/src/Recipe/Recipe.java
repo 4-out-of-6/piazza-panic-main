@@ -38,6 +38,14 @@ public class Recipe extends Sprite {
     public Ingredient getIngredientOverride() { return null; }
 
     /**
+     * Returns the texture of the completed foodstuff
+     * @return the assigned texture
+     */
+    public Texture getCompletedImg() {
+        return completedImg;
+    }
+
+    /**
      * Creates the completed dish sprite and draws it to the screen.
      * @param x The x-coordinate of the dish's location.
      * @param y The y-coordinate of the dish's location.

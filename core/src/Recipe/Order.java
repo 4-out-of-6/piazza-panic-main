@@ -30,6 +30,12 @@ public class Order extends Sprite {
     }
 
     /**
+     * Returns the recipe asked for in the order
+     * @return the stored recipe
+     */
+    public Recipe getRecipe() { return recipe; }
+
+    /**
      * Creates the order image and adds it to the given `SpriteBatch`.
      *
      * @param x The x coordinate of the order image.
@@ -40,7 +46,7 @@ public class Order extends Sprite {
         Sprite sprite = new Sprite(orderImg);
         float adjustedX = x - (8 / MainGame.PPM);
         float adjustedY = y + (7 / MainGame.PPM);
-        if (orderImg.toString().equals("Food/salad_recipe.png")) {
+        if (orderImg.toString().equals("Food/salad_recipe.png") || orderImg.toString().equals("Food/pizza_recipe.png")) {
             sprite.setBounds(adjustedX, adjustedY, 53 / MainGame.PPM, 28 / MainGame.PPM);
             sprite.draw(batch);
         } else {
