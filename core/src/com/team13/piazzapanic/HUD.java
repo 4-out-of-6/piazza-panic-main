@@ -82,7 +82,7 @@ public class HUD implements Disposable {
             timeLabel.setColor(Color.GREEN);
             timeStr = String.format("%d", worldTimerM) + ":" + String.format("%d", worldTimerS);
             timeLabel.setText(String.format("TIME: " + timeStr + " MONEY: %d", score));
-            timeLabelT.setText("SCENARIO COMPLETE");
+            timeLabelT.setText("SCENARIO COMPLETE \n PRESS ENTER TO EXIT");
             table.center().top();
             stage.addActor(table);
             return;

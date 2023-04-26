@@ -21,13 +21,10 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -73,8 +70,8 @@ public class PlayScreen implements Screen {
 
     public Boolean scenarioComplete;
     public int customerTotal;
-    private int customerCounter = 0;
     private int orderCounter = 0;
+    private int customerCounter = 0;
 
     public static float trayX;
     public static float trayY;
@@ -402,7 +399,7 @@ public class PlayScreen implements Screen {
                 RecipeManager.getMinRecipeCounterAt(randomNum) * 2
         );
         ordersArray.add(order);
-        hud.updateOrder(Boolean.FALSE, 1);
+        hud.updateOrder(scenarioComplete, orderCounter);
     }
 
     /**
@@ -420,6 +417,7 @@ public class PlayScreen implements Screen {
                 if (ordersArray.get(i).orderComplete) {
                     hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
                     ordersArray.remove(i);
+                    orderCounter++;
                     orderViewed = Math.max(0, orderViewed - 1);
                     hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
                     // We can break here, as only one order will be completed in any one frame
@@ -450,15 +448,19 @@ public class PlayScreen implements Screen {
         timeSecondsCount += Gdx.graphics.getDeltaTime();
 
         //Adds an order every 15 seconds and if the order list isn't full
-        if(orderTimeGap <= timeSecondsCount && orderCounter != customerTotal && ordersArray.size() <= 3){
+        if(orderTimeGap <= timeSecondsCount && customerCounter != customerTotal && ordersArray.size() <= 3){
             createOrder();
-            orderCounter++;
+            customerCounter++;
             orderTimeGap = timeSecondsCount + 15;
         }
 
         //Check win condition
-        if(customerCounter == customerTotal) {
+        if(orderCounter == customerTotal){
             scenarioComplete = Boolean.TRUE;
+        }
+
+        if(scenarioComplete && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+            Gdx.app.exit();
         }
 
         float period = 1f;
