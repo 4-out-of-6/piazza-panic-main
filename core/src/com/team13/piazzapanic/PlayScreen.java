@@ -69,6 +69,7 @@ public class PlayScreen implements Screen {
 
 
     public Boolean scenarioComplete;
+    public Boolean scenarioFailed;
     public int customerTotal;
     private int orderCounter = 0;
     private int customerCounter = 0;
@@ -83,6 +84,8 @@ public class PlayScreen implements Screen {
     private int orderViewed = 0;
     private float orderTimeGap = 0;
 
+    private int reputationPoints = 3;
+
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
      * creates and initializes game camera and viewport,
@@ -93,7 +96,8 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MainGame game){
         this.game = game;
-        scenarioComplete = Boolean.FALSE;
+        scenarioComplete = false;
+        scenarioFailed = false;
         RecipeManager.initialise();
         gamecam = new OrthographicCamera();
         // FitViewport to maintain aspect ratio whilst scaling to screen size
@@ -113,7 +117,7 @@ public class PlayScreen implements Screen {
 
         chef1 = new Chef(this.world, 31.5F,65);
         chef2 = new Chef(this.world, 128,65);
-        chef3 = new Chef(this.world, 79.75F, 65);
+        chef3 = new Chef(this.world, 79.75F, 50);
         controlledChef = chef1;
         world.setContactListener(new WorldContactListener());
         controlledChef.notificationSetBounds("Down");
@@ -221,11 +225,11 @@ public class PlayScreen implements Screen {
             orderViewed = 0;
         }
         else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            if(ordersArray.size() > 0) { orderViewed = 1; }
+            if(ordersArray.size() > 1) { orderViewed = 1; }
             else { orderViewed = 0; }
         }
         else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            if(ordersArray.size() > 1) { orderViewed = 2; }
+            if(ordersArray.size() > 2) { orderViewed = 2; }
             else { orderViewed = Math.max(0, ordersArray.size() - 1); }
         }
 
@@ -388,43 +392,63 @@ public class PlayScreen implements Screen {
      */
     public void createOrder() {
 
-        int recipeCount = RecipeManager.getCompleteRecipes().length;
-        int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
-        Order order;
-        System.out.println("Creating order for index " + randomNum);
+            int recipeCount = RecipeManager.getCompleteRecipes().length;
+            int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
+            Order order;
+            System.out.println("Creating order for index " + randomNum);
 
-        order = new Order(
-                RecipeManager.getCompleteRecipeAt(randomNum),
-                RecipeManager.getRecipeTextureAt(randomNum),
-                RecipeManager.getMinRecipeCounterAt(randomNum) * 2
-        );
-        ordersArray.add(order);
-        hud.updateOrder(scenarioComplete, orderCounter);
+            order = new Order(
+                    RecipeManager.getCompleteRecipeAt(randomNum),
+                    RecipeManager.getRecipeTextureAt(randomNum),
+                    RecipeManager.getMinRecipeCounterAt(randomNum) * 3.5f
+            );
+            ordersArray.add(order);
+            hud.updateOrder(scenarioComplete, scenarioFailed, orderCounter);
     }
 
     /**
      * Updates the orders as they are completed, or if the game scenario has been completed.
      */
     public void updateOrder(){
-        if(scenarioComplete==Boolean.TRUE) {
-            hud.updateScore(Boolean.TRUE, (6 - ordersArray.size()) * 35);
-            hud.updateOrder(Boolean.TRUE, 0);
+        if(scenarioFailed == true) {
+            hud.createFailState(customerTotal == -1);
             return;
         }
-        if(ordersArray.size() != 0) {
+        else if(scenarioComplete==Boolean.TRUE) {
+            hud.updateScore(Boolean.TRUE, (6 - ordersArray.size()) * 35);
+            hud.updateOrder(Boolean.TRUE, Boolean.FALSE, 0);
+            return;
+        }
+        if(ordersArray.size() != 0)
+        {
             for(int i = 0; i < ordersArray.size(); i++)
             {
-                if (ordersArray.get(i).orderComplete) {
+                if(ordersArray.get(i).orderFailed) {
+                    System.out.println("ORDER " + i + " FAILED");
+                    ordersArray.remove(i);
+                    orderViewed = Math.max(0, orderViewed - 1);
+                    reputationPoints--;
+                    if(reputationPoints == 0)
+                    {
+                        System.out.println("SCENARIO FAILED");
+                        scenarioFailed = true;
+                        if(orderCounter == -1) { hud.setScore(0); }
+                        ordersArray.clear();
+                        orderViewed = 0;
+                        return;
+                    }
+                }
+                else if (ordersArray.get(i).orderComplete) {
                     hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
                     ordersArray.remove(i);
                     orderCounter++;
                     orderViewed = Math.max(0, orderViewed - 1);
-                    hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
+                    hud.updateOrder(Boolean.FALSE, Boolean.FALSE, 6 - ordersArray.size());
                     // We can break here, as only one order will be completed in any one frame
                     break;
                 }
             }
-            ordersArray.get(orderViewed).create(Gdx.graphics.getDeltaTime(), trayX, trayY, game.batch);
+            if(ordersArray.size() > 0) { ordersArray.get(orderViewed).create(Gdx.graphics.getDeltaTime(), trayX, trayY, game.batch); }
         }
         OrderTickets.create(ordersArray, orderViewed, game.batch);
     }
@@ -448,7 +472,7 @@ public class PlayScreen implements Screen {
         timeSecondsCount += Gdx.graphics.getDeltaTime();
 
         //Adds an order every 15 seconds and if the order list isn't full
-        if(orderTimeGap <= timeSecondsCount && customerCounter != customerTotal && ordersArray.size() <= 3){
+        if(orderTimeGap <= timeSecondsCount && customerCounter != customerTotal && ordersArray.size() <= 3 && !scenarioComplete && !scenarioFailed){
             createOrder();
             customerCounter++;
             orderTimeGap = timeSecondsCount + 15;
@@ -459,7 +483,7 @@ public class PlayScreen implements Screen {
             scenarioComplete = Boolean.TRUE;
         }
 
-        if(scenarioComplete && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+        if((scenarioComplete || scenarioFailed) && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
             Gdx.app.exit();
         }
 

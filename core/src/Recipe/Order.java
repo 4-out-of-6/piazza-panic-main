@@ -14,6 +14,8 @@ public class Order extends Sprite {
     public Recipe recipe;
     /** A flag indicating whether the order has been completed. */
     public Boolean orderComplete;
+    /** A flag indicating whether the order has been failed. */
+    public Boolean orderFailed;
     /** The image representing this order. */
     public Texture orderImg;
 
@@ -34,6 +36,7 @@ public class Order extends Sprite {
         this.countdownTimer = countdownTimer;
         this.initialTimer = countdownTimer;
         this.orderComplete = false;
+        this.orderFailed = false;
     }
 
     public float getCountdownTimer() { return countdownTimer; }
@@ -71,7 +74,7 @@ public class Order extends Sprite {
         countdownTimer -= time;
         if(countdownTimer <= 0)
         {
-            // TODO: Implement fail state & loss of reputation point
+            orderFailed = true;
         }
     }
 }

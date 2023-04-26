@@ -10,9 +10,6 @@ import java.util.ArrayList;
 
 public class OrderTickets extends Sprite {
 
-    private static float x = 11;
-    private static float y = 6;
-
     /**
      * Draws the ticket receipts at the top of the screen, and a green box around the one currently being viewed.
      * @param ordersArray The array of orders currently put in

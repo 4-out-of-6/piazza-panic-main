@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class HUD implements Disposable {
     public Stage stage;
     private Boolean scenarioComplete;
+    private Boolean scenarioFailed;
 
     private Integer worldTimerM;
     private Integer worldTimerS;
@@ -34,7 +35,8 @@ public class HUD implements Disposable {
     Label orderNumLT;
 
     public HUD(SpriteBatch sb){
-        this.scenarioComplete = Boolean.FALSE;
+        this.scenarioComplete = false;
+        this.scenarioFailed = false;
         worldTimerM = 0;
         worldTimerS = 0;
         score = 0;
@@ -78,6 +80,7 @@ public class HUD implements Disposable {
      * @param scenarioComplete Whether the game scenario has been completed.
      */
     public void updateTime(Boolean scenarioComplete){
+        if(scenarioFailed) { return; }
         if(scenarioComplete){
             timeLabel.setColor(Color.GREEN);
             timeStr = String.format("%d", worldTimerM) + ":" + String.format("%d", worldTimerS);
@@ -156,7 +159,7 @@ public class HUD implements Disposable {
      * @param scenarioComplete Whether the game scenario has been completed.
      * @param orderNum The index number of the order.
      */
-    public void updateOrder(Boolean scenarioComplete, Integer orderNum){
+    public void updateOrder(Boolean scenarioComplete, Boolean scenarioFailed, Integer orderNum){
         if(scenarioComplete==Boolean.TRUE){
             orderNumL.remove();
             orderNumLT.remove();
@@ -172,8 +175,39 @@ public class HUD implements Disposable {
 
     }
 
+    /**
+     * Creates a fail state in the HUD
+     */
+    public void createFailState(boolean endlessMode)
+    {
+        scenarioFailed = true;
+
+        // If the gamemode is endless (i.e. the score was not discarded), then show the time and orders survived
+        if(endlessMode) {
+            timeLabel.setText(String.format("TIME: " + timeStr + " MONEY: %d", score));
+        }
+        else
+        {
+            timeLabel.remove();
+        }
+
+        scoreLabel.remove();
+        scoreLabelT.remove();
+        orderNumL.remove();
+        orderNumLT.remove();
+
+        timeLabelT.setText("SCENARIO FAILED \n PRESS ENTER TO EXIT");
+
+        table.center().top();
+        stage.addActor(table);
+    }
+
     @Override
     public void dispose() {
         stage.dispose();
     }
+
+    public int getScore() { return score; }
+
+    public void setScore(int score) { this.score = score; }
 }
