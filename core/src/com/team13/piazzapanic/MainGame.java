@@ -48,6 +48,15 @@ public class MainGame extends Game {
 	public void setCustomerCount(int customers){
 		playScreen.customerTotal = customers;
 	}
+	public void setDifficulty(String difficulty){
+		if (difficulty=="Easy"){
+			playScreen.difficultyModerator = 3.5f;
+		} else if (difficulty=="Medium"){
+			playScreen.difficultyModerator = 2.5f;
+		} else if (difficulty=="Hard"){
+			playScreen.difficultyModerator = 1.5f;
+		}
+	}
 	@Override
 	public void create() {
 		batch = new SpriteBatch();

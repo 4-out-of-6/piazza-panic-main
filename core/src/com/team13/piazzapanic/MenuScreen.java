@@ -25,8 +25,11 @@ public class MenuScreen implements Screen {
     private final OrthographicCamera camera;
     private final Viewport viewport;
     private BitmapFont font = new BitmapFont();
+    private BitmapFont font2 = new BitmapFont();
     private int customerNumber = 5;
-    Label customerLabel;
+    private boolean difficultySelected = false;
+    private String[] difficultyArray = {"Easy","Medium","Hard"};
+
 
     public MenuScreen(MainGame game) {
         this.game = game;
@@ -34,9 +37,9 @@ public class MenuScreen implements Screen {
         backgroundSprite = new Sprite(backgroundImage);
         camera = new OrthographicCamera();
         viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, camera);
-        BitmapFont font = new BitmapFont();
-        font.getData().setScale(0.5F, 0.3F);
-        customerLabel = new Label(String.valueOf(customerNumber), new Label.LabelStyle(font, Color.BLACK));
+        font.getData().setScale(1.2F, 1F);
+        font2.getData().setScale(1.2F, 1F);
+        font.setColor(Color.RED);
     }
 
     /**
@@ -64,20 +67,39 @@ public class MenuScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             game.setCustomerCount(customerNumber);
+            game.setDifficulty(difficultyArray[0]);
             game.isMenuScreen = false;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             game.setCustomerCount(-1);
+            game.setDifficulty(difficultyArray[0]);
             game.isMenuScreen = false;
-        } else if (Gdx.input.isKeyJustPressed((Input.Keys.LEFT)) && customerNumber > 1) {
-            customerNumber--;
-        } else if (Gdx.input.isKeyJustPressed((Input.Keys.RIGHT)) && customerNumber < 100) {
-            customerNumber++;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            if (difficultySelected) {
+                difficultyArray = rotateDifficulty(difficultyArray, true);
+            } else if (customerNumber > 1) {
+                customerNumber--;
+            }
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            if (difficultySelected) {
+                difficultyArray = rotateDifficulty(difficultyArray, false);
+            } else if (customerNumber < 100) {
+                customerNumber++;
+            }
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && difficultySelected) {
+            difficultySelected = false;
+            font.setColor(Color.RED);
+            font2.setColor(Color.WHITE);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && !difficultySelected) {
+            difficultySelected = true;
+            font2.setColor(Color.RED);
+            font.setColor(Color.WHITE);
         }
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
         backgroundSprite.draw(game.batch);
         font.draw(game.batch, String.valueOf(customerNumber), MainGame.V_WIDTH/2, MainGame.V_HEIGHT/3);
+        font2.draw(game.batch, difficultyArray[0], MainGame.V_WIDTH/2, MainGame.V_HEIGHT/5);
         game.batch.end();
     }
 
@@ -108,5 +130,30 @@ public class MenuScreen implements Screen {
     @Override
     public void dispose() {
         backgroundImage.dispose();
+        font.dispose();
+    }
+
+    /**
+     * Rotates an array or strings either left or right cyclically
+     *
+     * @param difficulties an array of difficulties
+     * @param rotateLeft a boolean that's true to rotate left, false to rotate right
+     * @return the rotated array of difficulties
+     */
+    public String[] rotateDifficulty(String[] difficulties, boolean rotateLeft){
+        String[] temp = new String[difficulties.length];
+
+        if (rotateLeft){
+            for (int i=0; i < difficulties.length-1; i++) {
+                temp[i+1] = difficulties[i];
+            }
+            temp[0] = difficulties[difficulties.length-1];
+        } else {
+            for (int i=1; i < difficulties.length; i++) {
+                temp[i-1] = difficulties[i];
+            }
+            temp[difficulties.length-1] = difficulties[0];
+        }
+        return temp;
     }
 }

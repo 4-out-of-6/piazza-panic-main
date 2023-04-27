@@ -79,12 +79,14 @@ public class PlayScreen implements Screen {
 
     private float timeSeconds = 0f;
 
-    private float timeSecondsCount = 0f;
+    private double timeSecondsCount = 0f;
 
     private int orderViewed = 0;
-    private float orderTimeGap = 0;
+    private double orderTimeGap = 0;
 
     private int reputationPoints = 3;
+    private double interval = 30;
+    public float difficultyModerator;
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -400,7 +402,7 @@ public class PlayScreen implements Screen {
             order = new Order(
                     RecipeManager.getCompleteRecipeAt(randomNum),
                     RecipeManager.getRecipeTextureAt(randomNum),
-                    RecipeManager.getMinRecipeCounterAt(randomNum) * 3.5f
+                    RecipeManager.getMinRecipeCounterAt(randomNum) * difficultyModerator
             );
             ordersArray.add(order);
             hud.updateOrder(scenarioComplete, scenarioFailed, orderCounter);
@@ -471,11 +473,17 @@ public class PlayScreen implements Screen {
         timeSeconds +=Gdx.graphics.getRawDeltaTime();
         timeSecondsCount += Gdx.graphics.getDeltaTime();
 
-        //Adds an order every 15 seconds and if the order list isn't full
+        //Adds an order every 30 seconds (decreasing) and if the order list isn't full
         if(orderTimeGap <= timeSecondsCount && customerCounter != customerTotal && ordersArray.size() <= 3 && !scenarioComplete && !scenarioFailed){
             createOrder();
             customerCounter++;
-            orderTimeGap = timeSecondsCount + 15;
+            //1 in 10 chance to have 2 orders arrive
+            if (ThreadLocalRandom.current().nextInt(10) == 1 && ordersArray.size() <= 2 && customerCounter != customerTotal) {
+                createOrder();
+                customerCounter++;
+            }
+            orderTimeGap = timeSecondsCount + interval;
+            interval = interval * 0.9;
         }
 
         //Check win condition
