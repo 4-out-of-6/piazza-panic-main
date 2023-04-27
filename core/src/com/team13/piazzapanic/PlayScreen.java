@@ -8,6 +8,7 @@ import Recipe.RecipeManager;
 import Recipe.OrderTickets;
 import Tools.B2WorldCreator;
 import Tools.WorldContactListener;
+import Recipe.ReputationPoints;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -502,6 +503,7 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
         updateOrder();
+        ReputationPoints.create(reputationPoints, game.batch);
         chef1.draw(game.batch);
         chef2.draw(game.batch);
         chef3.draw(game.batch);
