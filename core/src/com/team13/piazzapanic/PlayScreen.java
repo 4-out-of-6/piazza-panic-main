@@ -60,12 +60,14 @@ public class PlayScreen implements Screen {
     private final Chef chef1;
     private final Chef chef2;
     private final Chef chef3;
+    private int chefsUnlocked;
 
     private Chef controlledChef;
 
     public ArrayList<Order> ordersArray;
 
     public PlateStation plateStation;
+    public NewChefStation newChefStation;
     public ArrayList<Worktop> worktopStations = new ArrayList<>();
     public ArrayList<InteractiveTileObject> preparationStations = new ArrayList<>();
 
@@ -117,11 +119,12 @@ public class PlayScreen implements Screen {
         gamecam.position.set(gameport.getWorldWidth() / 2, gameport.getWorldHeight() / 2, 0);
 
         world = new World(new Vector2(0,0), true);
-        new B2WorldCreator(world, map, this, preparationStations);
+        new B2WorldCreator(world, map, this);
 
-        chef1 = new Chef(this.world, 31.5F,65);
-        chef2 = new Chef(this.world, 128,65);
-        chef3 = new Chef(this.world, 79.75F, 50);
+        chef1 = new Chef(this.world, 31.5F,65, false);
+        chef2 = new Chef(this.world, 71.75f,16, true);
+        chef3 = new Chef(this.world, 71.75f, 16, true);
+        chefsUnlocked = 1;
         controlledChef = chef1;
         world.setContactListener(new WorldContactListener());
         controlledChef.notificationSetBounds("Down");
@@ -157,11 +160,38 @@ public class PlayScreen implements Screen {
      */
 
     public void handleInput(float dt){
-        // If all three chefs can move, switch to the next one
+
+        boolean c1Free = chef1.getUserControlChef();
+        boolean c2Free = chef2.getUserControlChef();
+        boolean c3Free = chef3.getUserControlChef();
+        boolean c2Unlocked = !chef2.isLocked();
+        boolean c3Unlocked = !chef3.isLocked();
+
+        // If the R key is pressed, or when a chef is unavailable, switch to the next one
+        if(Gdx.input.isKeyJustPressed(Input.Keys.R) || controlledChef.getUserControlChef() == false)
+        {
+            if(controlledChef.equals(chef1))
+            {
+                if(c2Free && c2Unlocked) { controlledChef = chef2; }
+                else if(c3Free & c3Unlocked) { controlledChef = chef3; }
+            }
+            else if(controlledChef.equals(chef2))
+            {
+                if(c3Free & c3Unlocked) { controlledChef = chef3; }
+                else if(c1Free) { controlledChef = chef1; }
+            }
+            else if(controlledChef.equals(chef3))
+            {
+                if(c1Free) { controlledChef = chef1; }
+                else if(c2Free) { controlledChef = chef2; }
+            }
+        }
+
+        /** REMOVE
         if ((Gdx.input.isKeyJustPressed(Input.Keys.R) &&
                 chef1.getUserControlChef() &&
-                chef2.getUserControlChef() &&
-                chef3.getUserControlChef())) {
+                (chef2.getUserControlChef() && chef2.isLocked() == false) &&
+                (chef3.getUserControlChef() && chef3.isLocked() == false))) {
             controlledChef.b2body.setLinearVelocity(0, 0);
             if (controlledChef.equals(chef1)) {
                 controlledChef = chef2;
@@ -171,17 +201,17 @@ public class PlayScreen implements Screen {
                 controlledChef = chef1;
             }
         }
-        // If the controlled chef cannot move, switch to the next available one
+        // If the controlled chef cannot move, switch to the next available, unlocked one
         if (!controlledChef.getUserControlChef()){
             controlledChef.b2body.setLinearVelocity(0, 0);
             if(controlledChef.equals(chef1))
             {
-                if(chef2.getUserControlChef()) { controlledChef = chef2; }
-                else if(chef3.getUserControlChef()) { controlledChef = chef3; }
+                if(chef2.getUserControlChef() && chef2.isLocked() == false) { controlledChef = chef2; }
+                else if(chef3.getUserControlChef() && chef3.isLocked() == false) { controlledChef = chef3; }
             }
             else if(controlledChef.equals(chef2))
             {
-                if(chef3.getUserControlChef()) { controlledChef = chef3; }
+                if(chef3.getUserControlChef() && chef3.isLocked() == false) { controlledChef = chef3; }
                 else if(chef1.getUserControlChef()) { controlledChef = chef1; }
             }
             else
@@ -190,6 +220,8 @@ public class PlayScreen implements Screen {
                 else if(chef2.getUserControlChef()) { controlledChef = chef2; }
             }
         }
+        /** END OF REMOVE */
+
         if (controlledChef.getUserControlChef()) {
                 float xVelocity = 0;
                 float yVelocity = 0;
@@ -353,6 +385,29 @@ public class PlayScreen implements Screen {
                                     controlledChef.setUserControlChef(false);
                                 }
                             }
+                            break;
+
+                        case "Sprites.NewChefStation":
+                            if(chefsUnlocked == 1)
+                            {
+                                if(hud.getScore() >= 200 && !scenarioFailed && !scenarioComplete)
+                                {
+                                    hud.updateScore(-200);
+                                    chefsUnlocked++;
+                                    controlledChef.setY(controlledChef.getY() + (16 / MainGame.PPM));
+                                    chef2.setUnlocked();
+                                }
+                            }
+                            else if(chefsUnlocked == 2)
+                            {
+                                if(hud.getScore() >= 500 && !scenarioFailed && !scenarioComplete)
+                                {
+                                    hud.updateScore(-500);
+                                    chefsUnlocked++;
+                                    chef3.setUnlocked();
+                                }
+                            }
+                            break;
 
 
                         case "Sprites.CompletedDishStation":
@@ -407,7 +462,7 @@ public class PlayScreen implements Screen {
                     RecipeManager.getMinRecipeCounterAt(randomNum) * difficultyModerator
             );
             ordersArray.add(order);
-            hud.updateOrder(scenarioComplete, scenarioFailed, orderCounter);
+            hud.updateOrder(scenarioComplete, orderCounter);
     }
 
     /**
@@ -420,7 +475,7 @@ public class PlayScreen implements Screen {
         }
         else if(scenarioComplete==Boolean.TRUE) {
             hud.updateScore(Boolean.TRUE, (6 - ordersArray.size()) * 35);
-            hud.updateOrder(Boolean.TRUE, Boolean.FALSE, 0);
+            hud.updateOrder(Boolean.TRUE, 0);
             return;
         }
         if(ordersArray.size() != 0)
@@ -441,13 +496,18 @@ public class PlayScreen implements Screen {
                         orderViewed = 0;
                         return;
                     }
+                    else
+                    {
+                        orderCounter++;
+                        customerTotal++;
+                    }
                 }
                 else if (ordersArray.get(i).orderComplete) {
                     hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
                     ordersArray.remove(i);
                     orderCounter++;
                     orderViewed = Math.max(0, orderViewed - 1);
-                    hud.updateOrder(Boolean.FALSE, Boolean.FALSE, 6 - ordersArray.size());
+                    hud.updateOrder(Boolean.FALSE, orderCounter);
                     // We can break here, as only one order will be completed in any one frame
                     break;
                 }
@@ -518,6 +578,11 @@ public class PlayScreen implements Screen {
             if(s.isLocked()) {
                 LockedState.create(s.getX(), s.getY(), controlledChef, game.batch);
             }
+        }
+        // Render the chef buying options
+        if(chefsUnlocked < 3)
+        {
+            BuyChefState.create(newChefStation.getX(), newChefStation.getY(), controlledChef, chefsUnlocked, game.batch);
         }
 
         updateOrder();

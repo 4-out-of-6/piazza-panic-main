@@ -162,7 +162,7 @@ public class HUD implements Disposable {
      * @param scenarioComplete Whether the game scenario has been completed.
      * @param orderNum The index number of the order.
      */
-    public void updateOrder(Boolean scenarioComplete, Boolean scenarioFailed, Integer orderNum){
+    public void updateOrder(Boolean scenarioComplete, Integer orderNum){
         if(scenarioComplete==Boolean.TRUE){
             orderNumL.remove();
             orderNumLT.remove();

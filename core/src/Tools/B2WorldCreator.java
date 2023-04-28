@@ -39,7 +39,7 @@ public class B2WorldCreator {
  * @param map The TiledMap object.
  * */
 
-    public B2WorldCreator(World world, TiledMap map, PlayScreen screen, ArrayList<InteractiveTileObject> preparationStations) {
+    public B2WorldCreator(World world, TiledMap map, PlayScreen screen) {
 
         /*
             A record is kept of whether a station is already present in the map. If it is, then subsequent stations are 'locked'.
@@ -80,7 +80,7 @@ public class B2WorldCreator {
                     screen.worktopStations.add(newWorktop);
                 } else if (mapObject.getName().equals("chopping_board")) {
                     ChoppingBoard choppingBoard = new ChoppingBoard(world, map, bdef, rectangle);
-                    preparationStations.add(choppingBoard);
+                    screen.preparationStations.add(choppingBoard);
                     if(!firstChoppingBoard) { choppingBoard.setLocked(); }
                     else { firstChoppingBoard = false; }
                 } else if (mapObject.getName().equals("plate")) {
@@ -101,19 +101,19 @@ public class B2WorldCreator {
                     new PotatoStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan1")) {
                     Pan pan = new Pan(world, map, bdef, rectangle);
-                    preparationStations.add(pan);
+                    screen.preparationStations.add(pan);
                     if(!firstPan) { pan.setLocked(); }
                     else { firstPan = false; }
                 } else if (mapObject.getName().equals("steak")) {
                     new SteakStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan2")) {
                     Pan pan = new Pan(world, map, bdef, rectangle);
-                    preparationStations.add(pan);
+                    screen.preparationStations.add(pan);
                     if(!firstPan) { pan.setLocked(); }
                     else { firstPan = false; }
                 } else if(mapObject.getName().equals("oven")) {
                     Oven oven = new Oven(world, map, bdef, rectangle);
-                    preparationStations.add(oven);
+                    screen.preparationStations.add(oven);
                     if(!firstOven) { oven.setLocked(); }
                     else { firstOven = false; }
                 } else if (mapObject.getName().equals("completed_dish")) {
@@ -121,6 +121,9 @@ public class B2WorldCreator {
                 } else if (mapObject.getName().equals("order_top")) {
                     PlayScreen.trayX = rectangle.x;
                     PlayScreen.trayY = rectangle.y;
+                } else if(mapObject.getName().equals("new_chef_station")) {
+                    NewChefStation newChefStation = new NewChefStation(world, map, bdef, rectangle);;
+                    screen.newChefStation = newChefStation;
                 }
 
             }

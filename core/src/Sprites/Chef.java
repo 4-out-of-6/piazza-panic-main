@@ -77,6 +77,10 @@ public class Chef extends Sprite {
     public int nextOrderAppearTime;
     public Recipe previousInHandRecipe;
 
+    private boolean locked;
+    private boolean unlocking;
+    private float fadeTime;
+
     /**
      * Chef class constructor that initializes all the fields
      * @param world the world the chef exists in
@@ -84,7 +88,7 @@ public class Chef extends Sprite {
      * @param startY starting Y position
      */
 
-    public Chef(World world, float startX, float startY) {
+    public Chef(World world, float startX, float startY, boolean locked) {
         initialX = startX / MainGame.PPM;
         initialY = startY / MainGame.PPM;
 
@@ -97,7 +101,13 @@ public class Chef extends Sprite {
         this.world = world;
         currentState = State.DOWN;
 
-        defineChef();
+        this.locked = locked;
+        unlocking = false;
+
+        if(!locked)
+        {
+            defineChef();
+        }
 
         float chefWidth = 13 / MainGame.PPM;
         float chefHeight = 20 / MainGame.PPM;
@@ -124,6 +134,21 @@ public class Chef extends Sprite {
      */
     @Override
     public void draw (Batch batch) {
+
+        if(unlocking)
+        {
+            fadeTime -= Gdx.graphics.getDeltaTime();
+            if(fadeTime <= 0)
+            {
+                locked = false;
+                setAlpha(1);
+            }
+            else
+            {
+                setAlpha(1 - fadeTime);
+            }
+        }
+        else if(isLocked()) return;
 
         // Replication of static final values in Sprite class
         int vertexSize = 2 + 1 + 2;
@@ -156,12 +181,12 @@ public class Chef extends Sprite {
      * @param dt The delta time.
      */
     public void update(float dt) {
+        if(isLocked() && !unlocking) return;
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         currentSkin = getSkin(dt);
         setRegion(currentSkin);
 
         Ingredient inHandsIng = getInHandsIng();
-        Recipe inHandsRecipe = getInHandsRecipe();
 
         switch (currentState) {
             case UP:
@@ -609,6 +634,22 @@ public class Chef extends Sprite {
             }
             setChefSkin(item);
         }
+    }
+
+    /**
+     * Returns a flaf indicating whether the chef is currently locked
+     * @return
+     */
+    public boolean isLocked() { return locked; }
+
+
+    /**
+     * Sets the chef to unlocked mode
+     */
+    public void setUnlocked() {
+        defineChef();
+        fadeTime = 1;
+        unlocking = true;
     }
 }
 

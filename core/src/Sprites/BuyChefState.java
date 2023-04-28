@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.team13.piazzapanic.MainGame;
 
 /**
- * A visual represenation that a station is locked and needs unlocking.
+ * A visual represenation that more chefs can be purchased
  */
-public class LockedState {
+public class BuyChefState {
 
 
     /**
@@ -19,7 +19,7 @@ public class LockedState {
     private static int getGridPos(float a) { return (int)(a / (16 / MainGame.PPM)); }
 
 
-    public static void create(float x, float y, Chef chef, Batch batch) {
+    public static void create(float x, float y, Chef chef, int chefsUnlocked, Batch batch) {
 
         float adjustedX =  x - (8/MainGame.PPM);
         float adjustedY =  y - (8 / MainGame.PPM);
@@ -36,12 +36,13 @@ public class LockedState {
         if(inRange)
         {
             backgroundTex = new Texture("Locked_State/locked_state_background_selected.png");
-            lockTex = new Texture("Station_Prices/station_price_100.png");
-        }
+            if(chefsUnlocked == 1) { lockTex = new Texture("Station_Prices/station_price_200.png"); }
+            else { lockTex = new Texture("Station_Prices/station_price_500.png"); }
+            }
         else
         {
             backgroundTex = new Texture("Locked_State/locked_state_background.png");
-            lockTex = new Texture("Locked_State/locked_state_padlock.png");
+            lockTex = new Texture("Locked_State/locked_state_chef.png");
         }
 
         Sprite backgroundSprite = new Sprite(backgroundTex);
