@@ -187,41 +187,6 @@ public class PlayScreen implements Screen {
             }
         }
 
-        /** REMOVE
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.R) &&
-                chef1.getUserControlChef() &&
-                (chef2.getUserControlChef() && chef2.isLocked() == false) &&
-                (chef3.getUserControlChef() && chef3.isLocked() == false))) {
-            controlledChef.b2body.setLinearVelocity(0, 0);
-            if (controlledChef.equals(chef1)) {
-                controlledChef = chef2;
-            } else if(controlledChef.equals(chef2)) {
-                controlledChef = chef3;
-            } else {
-                controlledChef = chef1;
-            }
-        }
-        // If the controlled chef cannot move, switch to the next available, unlocked one
-        if (!controlledChef.getUserControlChef()){
-            controlledChef.b2body.setLinearVelocity(0, 0);
-            if(controlledChef.equals(chef1))
-            {
-                if(chef2.getUserControlChef() && chef2.isLocked() == false) { controlledChef = chef2; }
-                else if(chef3.getUserControlChef() && chef3.isLocked() == false) { controlledChef = chef3; }
-            }
-            else if(controlledChef.equals(chef2))
-            {
-                if(chef3.getUserControlChef() && chef3.isLocked() == false) { controlledChef = chef3; }
-                else if(chef1.getUserControlChef()) { controlledChef = chef1; }
-            }
-            else
-            {
-                if(chef1.getUserControlChef()) { controlledChef = chef1; }
-                else if(chef2.getUserControlChef()) { controlledChef = chef2; }
-            }
-        }
-        /** END OF REMOVE */
-
         if (controlledChef.getUserControlChef()) {
                 float xVelocity = 0;
                 float yVelocity = 0;

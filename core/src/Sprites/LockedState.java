@@ -11,6 +11,12 @@ import com.team13.piazzapanic.MainGame;
 public class LockedState {
 
 
+    private static Texture unselectedBackTexture = new Texture("Locked_State/locked_state_background.png");
+    private static Texture selectedBackTexture = new Texture("Locked_State/locked_state_background_selected.png");
+    private static Texture unselectedLockTexture = new Texture("Locked_State/locked_state_padlock.png");
+    private static Texture selectedLockTexture = new Texture("Station_Prices/station_price_100.png");
+
+
     /**
      * Returns the relative grid tile for the given position
      * @param a The position in the game world
@@ -35,13 +41,13 @@ public class LockedState {
 
         if(inRange)
         {
-            backgroundTex = new Texture("Locked_State/locked_state_background_selected.png");
-            lockTex = new Texture("Station_Prices/station_price_100.png");
+            backgroundTex = selectedBackTexture;
+            lockTex = selectedLockTexture;
         }
         else
         {
-            backgroundTex = new Texture("Locked_State/locked_state_background.png");
-            lockTex = new Texture("Locked_State/locked_state_padlock.png");
+            backgroundTex = unselectedBackTexture;
+            lockTex = unselectedLockTexture;
         }
 
         Sprite backgroundSprite = new Sprite(backgroundTex);

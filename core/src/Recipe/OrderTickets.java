@@ -10,6 +10,18 @@ import java.util.ArrayList;
 
 public class OrderTickets extends Sprite {
 
+    static Texture[] orderTextures = {
+            new Texture("Order_Tickets/order_1.png"),
+            new Texture("Order_Tickets/order_2.png"),
+            new Texture("Order_Tickets/order_3.png")
+    };
+
+    static Texture selectedTexture = new Texture("Order_Tickets/selected_ticket.png");
+    static Texture timerBackgroundTexture = new Texture("Timer/timer_background.png");
+    static Texture timerFillDangerTexture = new Texture("Timer/timer_foreground_danger.png");
+    static Texture timerFillWarningTexture = new Texture("Timer/timer_foreground_warning.png");
+    static Texture timerFillTexture = new Texture("Timer/timer_foreground_full.png");
+
     /**
      * Draws the ticket receipts at the top of the screen, and a green box around the one currently being viewed.
      * @param ordersArray The array of orders currently put in
@@ -21,7 +33,7 @@ public class OrderTickets extends Sprite {
         for(int i=0; i<3; i++)
         {
             // Draw each ticket
-            Sprite ticketSprite = new Sprite(new Texture("Order_Tickets/order_" + (i+1) + ".png"));
+            Sprite ticketSprite = new Sprite(orderTextures[i]);
             float ticketX = 0.85f;
             float ticketY = 1.5f - (i * 0.11f);
             ticketSprite.setBounds(ticketX, ticketY, 16 / MainGame.PPM, 10 / MainGame.PPM);
@@ -38,7 +50,7 @@ public class OrderTickets extends Sprite {
                 // If the ticket is the one currently being viewed, draw the selected box
                 if(viewedOrder == i)
                 {
-                    Sprite selectSprite = new Sprite(new Texture("Order_Tickets/selected_ticket.png"));
+                    Sprite selectSprite = new Sprite(selectedTexture);
                     selectSprite.setBounds(ticketX, ticketY, 16 / MainGame.PPM, 10 / MainGame.PPM);
                     selectSprite.draw(batch);
                 }
@@ -47,7 +59,7 @@ public class OrderTickets extends Sprite {
                 ordersArray.get(i).decrementCounterBy(Gdx.graphics.getDeltaTime());
 
                 // Draw timer background
-                Sprite timerBackground = new Sprite(new Texture("Timer/timer_background.png"));
+                Sprite timerBackground = new Sprite(timerBackgroundTexture);
                 float timerX = ticketX - (4 / MainGame.PPM);
                 float timerY = ticketY + (1 / MainGame.PPM);
                 timerBackground.setBounds(timerX, timerY, 1 / MainGame.PPM, 8 / MainGame.PPM);
@@ -56,9 +68,9 @@ public class OrderTickets extends Sprite {
                 // Draw timer fill
                 float percentageFull = Math.max(0, ordersArray.get(i).getCountdownTimer() / ordersArray.get(i).getInitialTimer());
                 Texture timerFill;
-                if(percentageFull < 0.25f) { timerFill = new Texture("Timer/timer_foreground_danger.png"); }
-                else if(percentageFull < 0.5f) { timerFill = new Texture("Timer/timer_foreground_warning.png"); }
-                else { timerFill = new Texture("Timer/timer_foreground_full.png"); }
+                if(percentageFull < 0.25f) { timerFill = timerFillDangerTexture; }
+                else if(percentageFull < 0.5f) { timerFill = timerFillWarningTexture; }
+                else { timerFill = timerFillTexture; }
                 Sprite timerForeground = new Sprite(timerFill);
                 timerForeground.setBounds(timerX, timerY, 1 / MainGame.PPM, (8 * percentageFull) / MainGame.PPM);
                 timerForeground.draw(batch);

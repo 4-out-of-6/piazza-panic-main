@@ -10,6 +10,12 @@ import com.team13.piazzapanic.MainGame;
  */
 public class BuyChefState {
 
+    private static Texture selectedBackgroundTexture = new Texture("Locked_State/locked_state_background_selected.png");
+    private static Texture unselectedBackgroundTexture = new Texture("Locked_State/locked_state_background.png");
+    private static Texture price200Texture = new Texture("Station_Prices/station_price_200.png");
+    private static Texture price500Texture = new Texture("Station_Prices/station_price_500.png");
+    private static Texture chefTexture = new Texture("Locked_State/locked_state_chef.png");
+
 
     /**
      * Returns the relative grid tile for the given position
@@ -35,14 +41,14 @@ public class BuyChefState {
 
         if(inRange)
         {
-            backgroundTex = new Texture("Locked_State/locked_state_background_selected.png");
-            if(chefsUnlocked == 1) { lockTex = new Texture("Station_Prices/station_price_200.png"); }
-            else { lockTex = new Texture("Station_Prices/station_price_500.png"); }
+            backgroundTex = selectedBackgroundTexture;
+            if(chefsUnlocked == 1) { lockTex = price200Texture; }
+            else { lockTex = price500Texture; }
             }
         else
         {
-            backgroundTex = new Texture("Locked_State/locked_state_background.png");
-            lockTex = new Texture("Locked_State/locked_state_chef.png");
+            backgroundTex = unselectedBackgroundTexture;
+            lockTex = chefTexture;
         }
 
         Sprite backgroundSprite = new Sprite(backgroundTex);
