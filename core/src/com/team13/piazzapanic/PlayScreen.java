@@ -67,6 +67,7 @@ public class PlayScreen implements Screen {
 
     public PlateStation plateStation;
     public ArrayList<Worktop> worktopStations = new ArrayList<>();
+    public ArrayList<InteractiveTileObject> preparationStations = new ArrayList<>();
 
 
     public Boolean scenarioComplete;
@@ -116,7 +117,7 @@ public class PlayScreen implements Screen {
         gamecam.position.set(gameport.getWorldWidth() / 2, gameport.getWorldHeight() / 2, 0);
 
         world = new World(new Vector2(0,0), true);
-        new B2WorldCreator(world, map, this);
+        new B2WorldCreator(world, map, this, preparationStations);
 
         chef1 = new Chef(this.world, 31.5F,65);
         chef2 = new Chef(this.world, 128,65);
@@ -302,7 +303,8 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.ChoppingBoard":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if (controlledChef.getInHandsIng().prepareTime > 0) {
                                     controlledChef.setUserControlChef(false);
                                 }
@@ -335,7 +337,8 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.Pan":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven == false) {
                                     controlledChef.setUserControlChef(false);
                                 }
@@ -343,7 +346,8 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.Oven":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if(controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven)
                                 {
                                     controlledChef.setUserControlChef(false);
@@ -357,9 +361,6 @@ public class PlayScreen implements Screen {
                                     if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(i).recipe.getClass())) {
                                         controlledChef.dropItemOn(tile);
                                         ordersArray.get(i).orderComplete = true;
-                                        if (ordersArray.size() == 1) {
-                                            scenarioComplete = Boolean.TRUE;
-                                        }
                                         break;
                                     }
                                 }
@@ -510,6 +511,15 @@ public class PlayScreen implements Screen {
         hud.stage.draw();
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
+
+        // Render locked icon on locked stations
+        for(InteractiveTileObject s : preparationStations)
+        {
+            if(s.isLocked()) {
+                LockedState.create(s.getX(), s.getY(), controlledChef, game.batch);
+            }
+        }
+
         updateOrder();
         ReputationPoints.create(reputationPoints, game.batch);
         chef1.draw(game.batch);
@@ -602,5 +612,19 @@ public class PlayScreen implements Screen {
         renderer.dispose();
         world.dispose();
         hud.dispose();
+    }
+
+
+    /**
+     * Tries to unlock the given tile
+     * @param tile the InteractiveTileObject to try unlocking.
+     */
+    void tryUnlock(InteractiveTileObject tile)
+    {
+        if(hud.getScore() >= 100 && !scenarioFailed && !scenarioComplete)
+        {
+            hud.updateScore(-100);
+            tile.setUnlocked();
+        }
     }
 }

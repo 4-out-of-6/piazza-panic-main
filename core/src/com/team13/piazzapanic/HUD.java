@@ -134,7 +134,6 @@ public class HUD implements Disposable {
             score += addScore;
         }
 
-
         if(scenarioComplete==Boolean.TRUE){
             scoreLabel.setColor(Color.GREEN);
             scoreLabel.setText("");
@@ -150,7 +149,11 @@ public class HUD implements Disposable {
         table.left().top();
         scoreLabel.setText(String.format("%d", score));
         stage.addActor(table);
+    }
 
+    public void updateScore(int amount) {
+        score += amount;
+        scoreLabel.setText(String.format("%d", score));
     }
 
     /**
@@ -184,7 +187,7 @@ public class HUD implements Disposable {
 
         // If the gamemode is endless (i.e. the score was not discarded), then show the time and orders survived
         if(endlessMode) {
-            timeLabel.setText(String.format("TIME: " + timeStr + " MONEY: %d", score));
+            timeLabel.setText(String.format("TIME: " + timeStr));
         }
         else
         {

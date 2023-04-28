@@ -11,6 +11,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.team13.piazzapanic.MainGame;
 import com.team13.piazzapanic.PlayScreen;
 
+import java.util.ArrayList;
+
 /**
  * B2WorldCreator is a class used to create Box2D World objects from a TiledMap.
  * This class uses the map objects to create various objects like worktop, plates,
@@ -37,7 +39,16 @@ public class B2WorldCreator {
  * @param map The TiledMap object.
  * */
 
-    public B2WorldCreator(World world, TiledMap map, PlayScreen screen) {
+    public B2WorldCreator(World world, TiledMap map, PlayScreen screen, ArrayList<InteractiveTileObject> preparationStations) {
+
+        /*
+            A record is kept of whether a station is already present in the map. If it is, then subsequent stations are 'locked'.
+            These stations can then be unlocked with in-game currency.
+         */
+        boolean firstChoppingBoard = true;
+        boolean firstPan = true;
+        boolean firstOven = true;
+
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
         for (int x = 0; x < layer.getWidth(); x++) {
             for (int y = 0; y < layer.getHeight(); y++) {
@@ -68,7 +79,10 @@ public class B2WorldCreator {
                     Worktop newWorktop = new Worktop(world, map, bdef, rectangle);
                     screen.worktopStations.add(newWorktop);
                 } else if (mapObject.getName().equals("chopping_board")) {
-                    new ChoppingBoard(world, map, bdef, rectangle);
+                    ChoppingBoard choppingBoard = new ChoppingBoard(world, map, bdef, rectangle);
+                    preparationStations.add(choppingBoard);
+                    if(!firstChoppingBoard) { choppingBoard.setLocked(); }
+                    else { firstChoppingBoard = false; }
                 } else if (mapObject.getName().equals("plate")) {
                     screen.plateStation = new PlateStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("tomato")) {
@@ -86,13 +100,22 @@ public class B2WorldCreator {
                 } else if (mapObject.getName().equals("potato")) {
                     new PotatoStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan1")) {
-                    new Pan(world, map, bdef, rectangle);
+                    Pan pan = new Pan(world, map, bdef, rectangle);
+                    preparationStations.add(pan);
+                    if(!firstPan) { pan.setLocked(); }
+                    else { firstPan = false; }
                 } else if (mapObject.getName().equals("steak")) {
                     new SteakStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("pan2")) {
-                    new Pan(world, map, bdef, rectangle);
+                    Pan pan = new Pan(world, map, bdef, rectangle);
+                    preparationStations.add(pan);
+                    if(!firstPan) { pan.setLocked(); }
+                    else { firstPan = false; }
                 } else if(mapObject.getName().equals("oven")) {
-                    new Oven(world, map, bdef, rectangle);
+                    Oven oven = new Oven(world, map, bdef, rectangle);
+                    preparationStations.add(oven);
+                    if(!firstOven) { oven.setLocked(); }
+                    else { firstOven = false; }
                 } else if (mapObject.getName().equals("completed_dish")) {
                     new CompletedDishStation(world, map, bdef, rectangle);
                 } else if (mapObject.getName().equals("order_top")) {

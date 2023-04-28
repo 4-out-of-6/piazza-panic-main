@@ -12,6 +12,8 @@ public abstract class InteractiveTileObject {
 
     protected BodyDef bdefNew;
 
+    protected boolean locked;
+
     /**
      * Constructor for the class, initialises b2bodies.
      *
@@ -31,5 +33,42 @@ public abstract class InteractiveTileObject {
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fixture = b2body.createFixture(fdef);
+
+        locked = false;
     }
+
+    /**
+     * Puts the interactive station in a 'locked' state. This state can be undone
+     * with money obtained throughout the game.
+     */
+    public void setLocked() { locked = true; }
+
+    /**
+     * Unlocks the station, allowing it to be used
+     */
+    public void setUnlocked() { locked = false; }
+
+    /**
+     * Returns whether the tile object is in its locked state
+     * @return Boolean stating whether the station is locked
+     */
+    public boolean isLocked() { return locked; }
+
+    /**
+     * Gets the x-coordinate of the worktop.
+     * @return The x-coordinate of the worktop.
+     */
+    public float getX(){
+        return bdefNew.position.x;
+    }
+
+
+    /**
+     * Gets the y-coordinate of the worktop.
+     * @return The y-coordinate of the worktop.
+     */
+    public float getY(){
+        return bdefNew.position.y;
+    }
+
 }
