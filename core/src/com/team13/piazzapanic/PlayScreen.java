@@ -204,6 +204,13 @@ public class PlayScreen implements Screen {
                     xVelocity += 0.5f;
                 }
                 controlledChef.b2body.setLinearVelocity(xVelocity, yVelocity);
+
+                // If the chef is being moved and is currently failing a preparation step, cancel the failure
+                if(controlledChef.isFailingStep() && (xVelocity != 0 || yVelocity != 0))
+                {
+                    controlledChef.preventStepFailure();
+                }
+
             }
             else {
                 controlledChef.b2body.setLinearVelocity(0, 0);
@@ -583,7 +590,7 @@ public class PlayScreen implements Screen {
             }
         }
 
-        if (!chef1.getUserControlChef()) {
+        if (!chef1.getUserControlChef() || chef1.isFailingStep()) {
             if (chef1.getTouchingTile() != null && chef1.getInHandsIng() != null){
                 if (chef1.getTouchingTile().getUserData() instanceof InteractiveTileObject){
                     chef1.displayIngStatic(game.batch);

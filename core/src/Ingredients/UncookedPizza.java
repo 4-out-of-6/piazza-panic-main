@@ -22,5 +22,7 @@ public class UncookedPizza extends Ingredient{
 
         super.tex.add(null);
         super.tex.add(new Texture("Food/Pizza.png"));
+        super.tex.add(new Texture("Food/Cooked_pizza.png"));
+        super.tex.add(new Texture("Food/Burnt_pizza.png"));
     }
 }

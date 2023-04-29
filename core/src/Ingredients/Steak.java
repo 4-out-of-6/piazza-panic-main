@@ -19,5 +19,6 @@ public class Steak extends Ingredient{
         super.tex.add(new Texture("Food/Meat.png"));
         super.tex.add(new Texture("Food/Patty.png"));
         super.tex.add(new Texture("Food/Cooked_patty.png"));
+        super.tex.add(new Texture("Food/Burnt_patty.png"));
     }
 }

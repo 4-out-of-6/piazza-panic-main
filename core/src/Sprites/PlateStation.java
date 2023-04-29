@@ -74,7 +74,7 @@ public class PlateStation extends InteractiveTileObject {
                     {
                         if(ing.getClass().toString().equals(recipe.getIngredients().get(i).getClass().toString()))
                         {
-                            if(ing.isCooked() && ing.isPrepared())
+                            if(ing.isCooked() && ing.isPrepared() && !ing.hasFailed())
                             {
                                 ingFound = true;
                             }

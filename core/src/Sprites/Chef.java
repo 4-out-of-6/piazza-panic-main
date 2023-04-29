@@ -1,9 +1,7 @@
 package Sprites;
 
 import Ingredients.*;
-import Recipe.BurgerRecipe;
 import Recipe.Recipe;
-import Recipe.SaladRecipe;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -80,6 +78,7 @@ public class Chef extends Sprite {
     private boolean locked;
     private boolean unlocking;
     private float fadeTime;
+    private boolean failingStep;
 
     /**
      * Chef class constructor that initializes all the fields
@@ -104,10 +103,7 @@ public class Chef extends Sprite {
         this.locked = locked;
         unlocking = false;
 
-        if(!locked)
-        {
-            defineChef();
-        }
+        if(!locked) { defineChef(); }
 
         float chefWidth = 13 / MainGame.PPM;
         float chefHeight = 20 / MainGame.PPM;
@@ -123,6 +119,8 @@ public class Chef extends Sprite {
         circleSprite = new Sprite(circleTexture);
         nextOrderAppearTime = 3;
         completedStation = null;
+
+        failingStep = false;
     }
 
 
@@ -244,39 +242,50 @@ public class Chef extends Sprite {
             waitTimer += dt;
             if (waitTimer > inHandsIng.prepareTime) {
                 inHandsIng.prepareTime = 0;
-                if(inHandsIng.getRecipeOverride() != null)
-                {
-                    Recipe temp = inHandsIng.getRecipeOverride();
-                    pushToStack(null);
-                    pushToStack(temp);
-                }
-                else
-                {
-                    inHandsIng.setPrepared();
-                }
-                userControlChef = true;
-                setChefSkin(peekInHandsStack());
-                waitTimer = 0;
+                returnIngToChef(false);
             }
         } else if (!userControlChef && !chefOnChefCollision && getInHandsIng().isPrepared() && inHandsIng.cookTime > 0) {
             waitTimer += dt;
             if (waitTimer > inHandsIng.cookTime) {
-                inHandsIng.cookTime = 0;
-                if(inHandsIng.getRecipeOverride() != null)
-                {
-                    Recipe temp = inHandsIng.getRecipeOverride();
-                    pushToStack(null);
-                    pushToStack(temp);
-                }
-                else
-                {
-                    inHandsIng.setCooked();
-                }
+                inHandsIng.setCooked();
+                failingStep = true;
                 userControlChef = true;
-                setChefSkin(peekInHandsStack());
-                waitTimer = 0;
+            }
+        } else if(failingStep) {
+            if(inHandsIng.hasFailed() == false)
+            {
+                inHandsIng.failTimer += dt;
+                if(inHandsIng.failTimer > 3f) inHandsIng.setFailed();
+            }
+            else
+            {
+                inHandsIng.cookTime = 0;
+                returnIngToChef(true);
             }
         }
+    }
+
+    /**
+     * Returns the chef's held ingredient from a station back into the stack.
+     * @param cookedNotCut determines whether the ingredient is being returned from a pan/oven (true) or chopping board (false)
+     */
+    void returnIngToChef(boolean cookedNotCut)
+    {
+        if(getInHandsIng().getRecipeOverride() != null && getInHandsIng().hasFailed() == false)
+        {
+            Recipe temp = getInHandsIng().getRecipeOverride();
+            pushToStack(null);
+            pushToStack(temp);
+        }
+        else
+        {
+            if(cookedNotCut) getInHandsIng().cookTime = 0;
+            else getInHandsIng().setPrepared();
+        }
+        userControlChef = true;
+        failingStep = false;
+        setChefSkin(peekInHandsStack());
+        waitTimer = 0;
     }
 
     /**
@@ -411,13 +420,13 @@ public class Chef extends Sprite {
     }
 
     /**
-     * Method to display the ingredient on the specific interactive tile objects (ChoppingBoard/Pan/Worktop)
+     * Method to display the ingredient on the specific interactive tile objects (ChoppingBoard/Pan/Worktop/Oven)
      * @param batch the SpriteBatch used to render the texture.
      */
 
     public void displayIngStatic(SpriteBatch batch) {
         Gdx.app.log("", getInHandsIng().toString());
-        if (whatTouching != null && !chefOnChefCollision) {
+        if ((whatTouching != null && !chefOnChefCollision)) {
             InteractiveTileObject tile = (InteractiveTileObject) whatTouching.getUserData();
             if (tile instanceof ChoppingBoard) {
                 ChoppingBoard tileNew = (ChoppingBoard) tile;
@@ -431,6 +440,7 @@ public class Chef extends Sprite {
             else if(tile instanceof Oven) {
                 Oven tileNew = (Oven) tile;
                 getInHandsIng().create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
+                setChefSkin(null);
             }
         }
     }
@@ -651,6 +661,21 @@ public class Chef extends Sprite {
         fadeTime = 1;
         unlocking = true;
     }
+
+    /**
+     * Cancel the failing of the current preparation step. Returns the ingredient to the chef's hand.
+     */
+    public void preventStepFailure()
+    {
+        failingStep = false;
+        returnIngToChef(true);
+    }
+
+    /**
+     * Returns the flag indicating whether the chef is currently failing a preparation step.
+     * @return Boolean value determining whether the current step is being failed
+     */
+    public boolean isFailingStep() { return failingStep; }
 }
 
 
