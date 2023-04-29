@@ -597,14 +597,14 @@ public class PlayScreen implements Screen {
                 }
             }
         }
-        if (!chef2.getUserControlChef()) {
+        if (!chef2.getUserControlChef() || chef2.isFailingStep()) {
             if (chef2.getTouchingTile() != null && chef2.getInHandsIng() != null) {
                 if (chef2.getTouchingTile().getUserData() instanceof InteractiveTileObject) {
                     chef2.displayIngStatic(game.batch);
                 }
             }
         }
-        if (!chef3.getUserControlChef()) {
+        if (!chef3.getUserControlChef() || chef3.isFailingStep()) {
             if (chef3.getTouchingTile() != null && chef3.getInHandsIng() != null) {
                 if (chef3.getTouchingTile().getUserData() instanceof InteractiveTileObject) {
                     chef3.displayIngStatic(game.batch);
