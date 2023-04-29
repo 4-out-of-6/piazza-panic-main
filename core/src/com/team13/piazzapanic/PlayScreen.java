@@ -365,9 +365,9 @@ public class PlayScreen implements Screen {
                             }
                             else if(chefsUnlocked == 2)
                             {
-                                if(hud.getScore() >= 500 && !scenarioFailed && !scenarioComplete)
+                                if(hud.getScore() >= 250 && !scenarioFailed && !scenarioComplete)
                                 {
-                                    hud.updateScore(-500);
+                                    hud.updateScore(-250);
                                     chefsUnlocked++;
                                     chef3.setUnlocked();
                                 }
@@ -439,7 +439,6 @@ public class PlayScreen implements Screen {
             return;
         }
         else if(scenarioComplete==Boolean.TRUE) {
-            hud.updateScore(Boolean.TRUE, (6 - ordersArray.size()) * 35);
             hud.updateOrder(Boolean.TRUE, 0);
             return;
         }
@@ -468,7 +467,8 @@ public class PlayScreen implements Screen {
                     }
                 }
                 else if (ordersArray.get(i).orderComplete) {
-                    hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
+                    float timeLeft = ordersArray.get(i).getCountdownTimer() / ordersArray.get(i).getInitialTimer();
+                    hud.updateScore(Boolean.FALSE, 150, timeLeft);
                     ordersArray.remove(i);
                     orderCounter++;
                     orderViewed = Math.max(0, orderViewed - 1);

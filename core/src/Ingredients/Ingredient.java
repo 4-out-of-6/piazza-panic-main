@@ -38,8 +38,6 @@ public abstract class Ingredient extends Sprite {
      */
     public ArrayList<Texture> tex;
 
-    private Sprite sprite;
-
     /**
      * Constructs a new Ingredient object with the specified preparation and cooking times.
      *

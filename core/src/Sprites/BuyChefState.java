@@ -13,7 +13,7 @@ public class BuyChefState {
     private static Texture selectedBackgroundTexture = new Texture("Locked_State/locked_state_background_selected.png");
     private static Texture unselectedBackgroundTexture = new Texture("Locked_State/locked_state_background.png");
     private static Texture price200Texture = new Texture("Station_Prices/station_price_200.png");
-    private static Texture price500Texture = new Texture("Station_Prices/station_price_500.png");
+    private static Texture price250Texture = new Texture("Station_Prices/station_price_250.png");
     private static Texture chefTexture = new Texture("Locked_State/locked_state_chef.png");
 
 
@@ -43,7 +43,7 @@ public class BuyChefState {
         {
             backgroundTex = selectedBackgroundTexture;
             if(chefsUnlocked == 1) { lockTex = price200Texture; }
-            else { lockTex = price500Texture; }
+            else { lockTex = price250Texture; }
             }
         else
         {

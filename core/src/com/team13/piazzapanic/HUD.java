@@ -114,23 +114,14 @@ public class HUD implements Disposable {
      * Calculates the user's score per order and updates the label.
      *
      * @param scenarioComplete Whether the game scenario has been completed.
-     * @param expectedTime The expected time an order should be completed in.
+     * @param amount The amount to increment the score by.
+     * @param timeLeft The percentage of the recipe's waiting time that is left, given between 0 and 1.
      */
-    public void updateScore(Boolean scenarioComplete, Integer expectedTime){
-        int addScore;
-        int currentTime;
+    public void updateScore(Boolean scenarioComplete, Integer amount, float timeLeft){
 
         if(this.scenarioComplete == Boolean.FALSE){
-            currentTime = (worldTimerM * 60) + worldTimerS;
-            if (currentTime <= expectedTime) {
-                addScore = 100;
-            }
-            else{
-                addScore = 100 - (5 * (currentTime -expectedTime));
-                if(addScore < 0){
-                    addScore = 0;
-                }
-            }
+            float adjustedTimeLeft = Math.max(timeLeft, 0.1f);
+            int addScore = (int)(amount * adjustedTimeLeft);
             score += addScore;
         }
 
@@ -173,7 +164,7 @@ public class HUD implements Disposable {
 
         table.left().top();
         orderNumL.setText(String.format("%d", orderNum));
-        orderNumLT.setText("ORDER");
+        orderNumLT.setText("ORDERS");
         stage.addActor(table);
 
     }
