@@ -2,6 +2,7 @@ package com.team13.piazzapanic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Game;
 
@@ -39,6 +40,7 @@ public class MainGame extends Game {
 	private PlayScreen playScreen;
 	private StartScreen startScreen;
 	public boolean isMenuScreen;
+	private Preferences highScoreData;
 
 	public MainGame(){
 		isPlayScreen = false;
@@ -56,6 +58,7 @@ public class MainGame extends Game {
 		} else if (difficulty=="Hard"){
 			playScreen.difficultyModerator = 1.5f;
 		}
+		playScreen.difficulty = difficulty;
 	}
 	@Override
 	public void create() {
@@ -63,6 +66,17 @@ public class MainGame extends Game {
 		menuScreen = new MenuScreen(this);
 		startScreen = new StartScreen(this);
 		playScreen = new PlayScreen(this);
+
+		// Create high score data if none exists
+		highScoreData = Gdx.app.getPreferences("piazza_panic_hs");
+		if(highScoreData.get().size() != 3)
+		{
+			highScoreData.clear();
+			highScoreData.putInteger("Easy", 0);
+			highScoreData.putInteger("Medium", 0);
+			highScoreData.putInteger("Hard", 0);
+			highScoreData.flush();
+		}
 	}
 
 	@Override

@@ -90,6 +90,7 @@ public class PlayScreen implements Screen {
 
     public int reputationPoints = 3;
     private double interval = 30;
+    public String difficulty;
     public float difficultyModerator;
 
     /**
@@ -456,10 +457,12 @@ public class PlayScreen implements Screen {
     public void updateOrder(){
         if(scenarioFailed == true) {
             hud.createFailState(customerTotal == -1);
+            SaveManager.saveEndGameState(this);
             return;
         }
         else if(scenarioComplete==Boolean.TRUE) {
             hud.updateOrder(Boolean.TRUE, 0);
+            SaveManager.saveEndGameState(this);
             return;
         }
         if(ordersArray.size() != 0)

@@ -13,9 +13,42 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public final class SaveManager {
+
+    private static boolean endGameSaved = false;
+
+    public static void saveEndGameState(PlayScreen screen)
+    {
+        if(!endGameSaved)
+        {
+            // Update the high score preferences
+            Preferences hsData = Gdx.app.getPreferences("piazza_panic_hs");
+            String difficulty = screen.difficulty;
+            System.out.println("DIFFICULTY: " + hsData.get().get(difficulty).toString());
+            if(Integer.parseInt(hsData.get().get(difficulty).toString()) < screen.orderCounter)
+            {
+                hsData.putInteger(difficulty, screen.orderCounter);
+                hsData.flush();
+            }
+
+            // Clear mid-game save data to prevent save hopping
+            Preferences progressData = Gdx.app.getPreferences("piazza_panic_progress");
+            progressData.clear();
+            progressData.flush();
+            Preferences chefData = Gdx.app.getPreferences("piazza_panic_chef");
+            chefData.clear();
+            chefData.flush();
+            Preferences tileData = Gdx.app.getPreferences("piazza_panic_tile");
+            tileData.clear();
+            tileData.flush();
+            Preferences orderData = Gdx.app.getPreferences("piazza_panic_order");
+            orderData.clear();
+            orderData.flush();
+
+            endGameSaved = true;
+        }
+    }
 
     /**
      * Saves the current state of the game to the preferences file. Follows the structure dictated in
