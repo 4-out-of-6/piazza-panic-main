@@ -57,9 +57,9 @@ public class PlayScreen implements Screen {
     private final OrthogonalTiledMapRenderer renderer;
 
     private final World world;
-    private final Chef chef1;
-    private final Chef chef2;
-    private final Chef chef3;
+    public final Chef chef1;
+    public final Chef chef2;
+    public final Chef chef3;
     private int chefsUnlocked;
 
     private Chef controlledChef;
@@ -75,8 +75,8 @@ public class PlayScreen implements Screen {
     public Boolean scenarioComplete;
     public Boolean scenarioFailed;
     public int customerTotal;
-    private int orderCounter = 0;
-    private int customerCounter = 0;
+    public int orderCounter = 0;
+    public int customerCounter = 0;
 
     public static float trayX;
     public static float trayY;
@@ -88,7 +88,7 @@ public class PlayScreen implements Screen {
     private int orderViewed = 0;
     private double orderTimeGap = 0;
 
-    private int reputationPoints = 3;
+    public int reputationPoints = 3;
     private double interval = 30;
     public float difficultyModerator;
 
@@ -160,6 +160,19 @@ public class PlayScreen implements Screen {
      */
 
     public void handleInput(float dt){
+
+        // Check for save key pressed
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P))
+        {
+            try {
+                SaveManager.saveMidGameState(this, hud);
+                System.out.println("SAVE SUCCESSFUL");
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.toString());
+            }
+        }
 
         boolean c1Free = chef1.getUserControlChef();
         boolean c2Free = chef2.getUserControlChef();

@@ -19,6 +19,7 @@ public class HUD implements Disposable {
 
     private Integer worldTimerM;
     private Integer worldTimerS;
+    public Integer totalTimer;
 
     private Integer score;
 
@@ -39,6 +40,7 @@ public class HUD implements Disposable {
         this.scenarioFailed = false;
         worldTimerM = 0;
         worldTimerS = 0;
+        totalTimer = 0;
         score = 0;
         timeStr = String.format("%d", worldTimerM) + " : " + String.format("%d", worldTimerS);
         float fontX = 0.5F;
@@ -98,6 +100,7 @@ public class HUD implements Disposable {
                 worldTimerS += 1;
             }
         }
+        totalTimer++;
         table.left().top();
         if(worldTimerS < 10){
             timeStr = String.format("%d", worldTimerM) + ":0" + String.format("%d", worldTimerS);

@@ -1,0 +1,56 @@
+END GAME SAVE
+-------------
+high_score				    :	Map holding the difficulty high scores
+	easy				    : 	Easy High Score
+	medium				    : 	Medium High Score
+	hard				    : 	Hard High Score
+* when the game ends, mid-game save must be wiped
+
+-------------------------------------------------------------------------------------------------------------
+
+
+MID-GAME SAVE
+-------------
+progress_data				:	Map holding the data used for scoring/game over
+	score				    :	The money currently held by the user
+	completed_orders		:	The number of orders completed by the user
+	time				    :	The amount of time that the user has been going on for
+	rep_points			    :	The number of remaining reputation points
+chef_data				    :	Information about the world
+    chef_1			        :	Information regarding chef 1
+        pos_x		        :	Chef 1's x position
+        pos_y		        :	Chef 1's y position
+        stack		        :	The contents of chef 1's stack, an array of data (see 'stack')
+    chef_2			        :	Information regarding chef 2
+        pos_x		        :	Chef 2's x position
+        pos_y		        :	Chef 2's y position
+        stack		        :	The contents of chef 2's stack, an array of data (see 'stack')
+        locked		        :	Whether chef 2 is currently locked - Boolean
+    chef_3			        :	Information regarding chef 3
+        pos_x		        :	Chef 3's x position
+        pos_y		        :	Chef 3's y position
+        stack		        :	The contents of chef 3's stack, an array of data (see 'stack')
+        locked		        :	Whether chef 3 is currently locked - Boolean
+tile_data				    :	Data for the tiles in the world
+	worktops			    :	An Array of Information related to each worktop station
+		[i]			        :	The item held in worktop station i. Read like a single-element stack (see 'stack')
+	plate_station			:	The contents of the plate station's stack, an array of data (see 'stack')
+	unlocked_stations		:	An array of boolean values, dictating if a station is unlocked
+order_data				    :	Information pertaining to the orders currently active
+    data                    :   An array of orders
+        [i]				    :	Item i of the orders array
+            id		        :	The ID of the recipe in the RecipeManager's recipe stack
+            countdown_timer :	The time remaining to complete the order
+            initial_timer	:	The initial amount of time given to complete the order
+
+-------------------------------------------------------------------------------------------------------------
+
+STACK
+-----
+
+[i]					        :	Item i of the stack
+	type				    :	Either 'recipe' or 'ingredient'
+	id                      :   The id of the recipe according to RecipeManager                 [only if type == 'recipe']
+	is_prepared			    :	Boolean, whether the ingredient is prepared 			        [only if type == 'ingredient']
+	is_cooked			    :	Boolean, whether the ingredient is cooked 			            [only if type == 'ingredient']
+	is_failed			    :	Boolean, whether the ingredient's preparation has been failed	[only if type == 'ingredient']

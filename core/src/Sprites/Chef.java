@@ -515,6 +515,14 @@ public class Chef extends Sprite {
         return inHandsStack.size();
     }
 
+    /**
+     * Returns the chef's stack
+     * @return an ArrayList of recipe/ingredients.
+     */
+    public ArrayList<Sprite> getInHandsStack() {
+        return inHandsStack;
+    }
+
 
     /**
      * Returns the top item in the chef's stack

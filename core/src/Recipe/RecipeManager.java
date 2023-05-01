@@ -88,4 +88,20 @@ public class RecipeManager {
      */
     public static Recipe[] getCompleteRecipes() { return completeRecipes; }
 
+    /**
+     * Returns the index of the given recipe in the Recipes array
+     * @param recipe the recipe to find the index of
+     * @return an integer indicating the index of the recipe in the array, or -1 if the recipe cannot be found
+     */
+    public static int getIndexOfRecipe(Recipe recipe) {
+        for(int i = 0; i < recipes.length; i++)
+        {
+            if(recipes[i].equals(recipe))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }
