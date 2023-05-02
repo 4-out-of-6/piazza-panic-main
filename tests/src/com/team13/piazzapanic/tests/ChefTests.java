@@ -1,6 +1,7 @@
 package com.team13.piazzapanic.tests;
 
 import Sprites.Chef;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(GdxTestRunner.class)
-public class MovementTests {
+public class ChefTests {
 
     @Test
     public void testChefMove() {
@@ -33,5 +34,12 @@ public class MovementTests {
         chef2.chefsColliding();
         //Check game knows chefs are colliding when the function is called
         assertTrue(chef1.chefOnChefCollision && chef2.chefOnChefCollision);
+    }
+
+    @Test
+    public void testChefAssets() {
+        assertTrue(Gdx.files.internal("Chef/Chef_holding_ingredient.png").exists());
+        assertTrue(Gdx.files.internal("Chef/Chef_normal.png").exists());
+        assertTrue(Gdx.files.internal("Chef/chefIdentifier.png").exists());
     }
 }
