@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.team13.piazzapanic.MainGame;
+import com.team13.piazzapanic.PowerUpManager;
 
 /**
  * The `Order` class extends the `Sprite` class and represents a recipe order
@@ -73,7 +74,7 @@ public class Order extends Sprite {
 
     public void decrementCounterBy(float time)
     {
-        countdownTimer -= time;
+        countdownTimer -= time * PowerUpManager.timeSlow();
         if(countdownTimer <= 0)
         {
             orderFailed = true;

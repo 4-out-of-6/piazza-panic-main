@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.team13.piazzapanic.MainGame;
+import com.team13.piazzapanic.PowerUpManager;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -582,7 +583,25 @@ public class Chef extends Sprite {
         else if(item != null)
         {
             System.out.println("Pushing " + item + " to stack...");
-            inHandsStack.add(0, item);
+            if(item instanceof Ingredient && PowerUpManager.instantPrepper())
+            {
+                Ingredient ing = (Ingredient) item;
+                if(ing.getRecipeOverride() != null)
+                {
+                    inHandsStack.add(0, ing.getRecipeOverride());
+                }
+                else
+                {
+                    ing.setPrepared();
+                    ing.setCooked();
+                    inHandsStack.add(0, ing);
+                }
+                PowerUpManager.usedPowerUp();
+            }
+            else
+            {
+                inHandsStack.add(0, item);
+            }
         }
         setChefSkin(peekInHandsStack());
         System.out.println(inHandsStack.toString() + "\n");
@@ -645,6 +664,7 @@ public class Chef extends Sprite {
         if (station instanceof PlateStation) {
             PlateStation pStation = (PlateStation) station;
             Object item = pStation.pickUpItem();
+            System.out.println("Received > " + item.getClass() + " from pStation");
             if (item instanceof Ingredient) {
                 pushToStack((Ingredient) item);
             } else if (item instanceof Recipe) {

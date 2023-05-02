@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.team13.piazzapanic.MainGame;
+import com.team13.piazzapanic.PowerUpManager;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ public class OrderTickets extends Sprite {
     static Texture timerFillDangerTexture = new Texture("Timer/timer_foreground_danger.png");
     static Texture timerFillWarningTexture = new Texture("Timer/timer_foreground_warning.png");
     static Texture timerFillTexture = new Texture("Timer/timer_foreground_full.png");
+    static Texture timerFillSlowedTexture = new Texture("Timer/timer_foreground_slowed.png");
 
     /**
      * Draws the ticket receipts at the top of the screen, and a green box around the one currently being viewed.
@@ -68,7 +70,8 @@ public class OrderTickets extends Sprite {
                 // Draw timer fill
                 float percentageFull = Math.max(0, ordersArray.get(i).getCountdownTimer() / ordersArray.get(i).getInitialTimer());
                 Texture timerFill;
-                if(percentageFull < 0.25f) { timerFill = timerFillDangerTexture; }
+                if(PowerUpManager.timeSlow() != 1) { timerFill = timerFillSlowedTexture; }
+                else if(percentageFull < 0.25f) { timerFill = timerFillDangerTexture; }
                 else if(percentageFull < 0.5f) { timerFill = timerFillWarningTexture; }
                 else { timerFill = timerFillTexture; }
                 Sprite timerForeground = new Sprite(timerFill);

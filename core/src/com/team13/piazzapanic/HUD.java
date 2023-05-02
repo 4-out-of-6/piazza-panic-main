@@ -135,8 +135,9 @@ public class HUD implements Disposable {
 
         if(this.scenarioComplete == Boolean.FALSE){
             float adjustedTimeLeft = Math.max(timeLeft, 0.1f);
-            int addScore = (int)(amount * adjustedTimeLeft);
+            int addScore = (int)(amount * adjustedTimeLeft * PowerUpManager.cashCow());
             score += addScore;
+            if(PowerUpManager.cashCow() != 1) PowerUpManager.usedPowerUp();
         }
 
         if(scenarioComplete==Boolean.TRUE){

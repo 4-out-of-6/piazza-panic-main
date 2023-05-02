@@ -181,6 +181,7 @@ public class PlayScreen implements Screen {
         // If the R key is pressed, or when a chef is unavailable, switch to the next one
         if(Gdx.input.isKeyJustPressed(Input.Keys.R) || controlledChef.getUserControlChef() == false)
         {
+            controlledChef.b2body.setLinearVelocity(0, 0);
             if(controlledChef.equals(chef1))
             {
                 if(c2Free && c2Unlocked) { controlledChef = chef2; }
@@ -203,16 +204,16 @@ public class PlayScreen implements Screen {
                 float yVelocity = 0;
 
                 if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                    yVelocity += 0.5f;
+                    yVelocity += 0.5f * PowerUpManager.speedIncrease();
                 }
                 if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                    xVelocity -= 0.5f;
+                    xVelocity -= 0.5f * PowerUpManager.speedIncrease();
                 }
                 if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                    yVelocity -= 0.5f;
+                    yVelocity -= 0.5f * PowerUpManager.speedIncrease();
                 }
                 if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                    xVelocity += 0.5f;
+                    xVelocity += 0.5f * PowerUpManager.speedIncrease();
                 }
                 controlledChef.b2body.setLinearVelocity(xVelocity, yVelocity);
 
@@ -426,6 +427,7 @@ public class PlayScreen implements Screen {
         chef1.update(dt);
         chef2.update(dt);
         chef3.update(dt);
+        PowerUpManager.update(dt, controlledChef, this);
         world.step(1/60f, 6, 2);
 
     }
@@ -572,6 +574,7 @@ public class PlayScreen implements Screen {
 
         updateOrder();
         ReputationPoints.create(reputationPoints, game.batch);
+        PowerUpManager.draw(game.batch);
         chef1.draw(game.batch);
         chef2.draw(game.batch);
         chef3.draw(game.batch);
