@@ -78,6 +78,22 @@ public abstract class Ingredient extends Sprite {
     }
 
     /**
+     * A copy constructor to create a shallow copy of an ingredient class.
+     * @param another The ingredient class to replicate
+     */
+    public Ingredient(Ingredient another)
+    {
+        this.prepareTime = another.prepareTime;
+        this.cookTime = another.cookTime;
+        this.cookInOven = another.cookInOven;
+        this.recipeOverride = another.recipeOverride;
+        this.amICooked = another.amICooked;
+        this.amIPrepared = another.amIPrepared;
+        this.tex = another.tex;
+        this.failTimer = another.failTimer;
+    }
+
+    /**
      * Sets the flag indicating that the ingredient has been prepared.
      *
      */

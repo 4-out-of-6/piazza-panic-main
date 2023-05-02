@@ -43,6 +43,8 @@ public class Order extends Sprite {
 
     public float getInitialTimer() { return initialTimer; }
 
+    public void setInitialTimer(float initialTimer) { this.initialTimer = initialTimer; }
+
     /**
      * Returns the recipe asked for in the order
      * @return the stored recipe

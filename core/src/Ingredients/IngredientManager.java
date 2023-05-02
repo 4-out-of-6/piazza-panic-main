@@ -2,6 +2,8 @@ package Ingredients;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
@@ -30,7 +32,23 @@ public class IngredientManager {
      * @param index the index of the ingredient to get
      * @return the Ingredient at the given index
      */
-    public static Ingredient getIngredientAt(int index) { return ingredients[index]; }
+    public static Ingredient getIngredientAt(int index) {
+        switch(ingredients[index].getClass().getSimpleName())
+        {
+            case "Bun":             return new Bun(0, 3);
+            case "Cheese":          return new Cheese(2, 0);
+            case "Dough":           return new Dough(0, 0);
+            case "Lettuce":         return new Lettuce(2, 0);
+            case "Onion":           return new Onion(2, 0);
+            case "Potato":          return new Potato(0, 3);
+            case "Steak":           return new Steak(2, 3);
+            case "Tomato":          return new Tomato(2, 0);
+            case "UncookedPizza":   return new UncookedPizza(0, 4);
+            default:
+                System.out.println("Unknown ingredient");
+                return null;
+        }
+    }
 
 
     /**

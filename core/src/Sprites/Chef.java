@@ -684,6 +684,14 @@ public class Chef extends Sprite {
      * @return Boolean value determining whether the current step is being failed
      */
     public boolean isFailingStep() { return failingStep; }
+
+    /**
+     * Replaces the chef's current stack with the provided new one
+     */
+    public void replaceStack(ArrayList<Sprite> stack) {
+        inHandsStack = (ArrayList<Sprite>)stack.clone();
+        setChefSkin(peekInHandsStack());
+    }
 }
 
 

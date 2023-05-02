@@ -62,6 +62,13 @@ public class RecipeManager {
      */
     public static Recipe getCompleteRecipeAt(int index) { return completeRecipes[index]; }
 
+    /**
+     * Returns the recipe at the given index
+     * @param index the index of the recipe to get
+     * @return the Recipe at the given index
+     */
+    public static Recipe getRecipeAt(int index) { return recipes[index]; }
+
 
     /**
      * Returns the Texture of the Recipe at the given index
@@ -96,7 +103,23 @@ public class RecipeManager {
     public static int getIndexOfRecipe(Recipe recipe) {
         for(int i = 0; i < recipes.length; i++)
         {
-            if(recipes[i].equals(recipe))
+            if(recipes[i].getClass().getName().equals(recipe.getClass().getName()))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index of the given complete recipe in the Recipes array
+     * @param recipe the complete recipe to find the index of
+     * @return an integer indicating the index of the complete recipe in the array, or -1 if the recipe cannot be found
+     */
+    public static int getIndexOfCompleteRecipe(Recipe recipe) {
+        for(int i = 0; i < completeRecipes.length; i++)
+        {
+            if(completeRecipes[i].getClass().getName().equals(recipe.getClass().getName()))
             {
                 return i;
             }

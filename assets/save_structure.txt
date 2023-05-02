@@ -14,19 +14,27 @@ MID-GAME SAVE
 progress_data				:	Map holding the data used for scoring/game over
 	score				    :	The money currently held by the user
 	completed_orders		:	The number of orders completed by the user
-	time				    :	The amount of time that the user has been going on for
+	hud_time				:	The time passed according to HUD
 	rep_points			    :	The number of remaining reputation points
+	customer_counter        :   The number of customers that have visited so far
+	customer_total          :   The total number of customers to visit
+	difficulty              :   The difficulty level of the saved game
+	interval                :   The time interval between orders
+	time_seconds            :   The time passed according to PlayScreen
+	time_seconds_count      :   The time seconds count according to PlayScreen
+	order_time_gap          :   The time gap between orders
+
 chef_data				    :	Information about the world
-    chef_1			        :	Information regarding chef 1
+    c1_			            :	Information regarding chef 1
         pos_x		        :	Chef 1's x position
         pos_y		        :	Chef 1's y position
         stack		        :	The contents of chef 1's stack, an array of data (see 'stack')
-    chef_2			        :	Information regarding chef 2
+    c2_ 			        :	Information regarding chef 2
         pos_x		        :	Chef 2's x position
         pos_y		        :	Chef 2's y position
         stack		        :	The contents of chef 2's stack, an array of data (see 'stack')
         locked		        :	Whether chef 2 is currently locked - Boolean
-    chef_3			        :	Information regarding chef 3
+    c3_ 			        :	Information regarding chef 3
         pos_x		        :	Chef 3's x position
         pos_y		        :	Chef 3's y position
         stack		        :	The contents of chef 3's stack, an array of data (see 'stack')
@@ -35,6 +43,7 @@ tile_data				    :	Data for the tiles in the world
 	worktops			    :	An Array of Information related to each worktop station
 		[i]			        :	The item held in worktop station i. Read like a single-element stack (see 'stack')
 	plate_station			:	The contents of the plate station's stack, an array of data (see 'stack')
+	recipe_done             :   The recipe done value of the plate station. Read like a single-element stack (see 'stack')
 	unlocked_stations		:	An array of boolean values, dictating if a station is unlocked
 order_data				    :	Information pertaining to the orders currently active
     data                    :   An array of orders
@@ -49,8 +58,8 @@ STACK
 -----
 
 [i]					        :	Item i of the stack
-	type				    :	Either 'recipe' or 'ingredient'
-	id                      :   The id of the recipe according to RecipeManager                 [only if type == 'recipe']
-	is_prepared			    :	Boolean, whether the ingredient is prepared 			        [only if type == 'ingredient']
-	is_cooked			    :	Boolean, whether the ingredient is cooked 			            [only if type == 'ingredient']
-	is_failed			    :	Boolean, whether the ingredient's preparation has been failed	[only if type == 'ingredient']
+	[0] type				:	Either 'recipe' or 'ingredient'
+	[1] id                  :   The id of the recipe according to RecipeManager/IngredientManager
+	[2] is_prepared			:	Boolean, whether the ingredient is prepared 			            [only if type == 'ingredient']
+	[3] is_cooked			:	Boolean, whether the ingredient is cooked 			                [only if type == 'ingredient']
+	[4] is_failed			:	Boolean, whether the ingredient's preparation has been failed	    [only if type == 'ingredient']

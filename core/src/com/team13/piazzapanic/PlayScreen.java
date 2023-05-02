@@ -51,7 +51,7 @@ public class PlayScreen implements Screen {
     private final MainGame game;
     private final OrthographicCamera gamecam;
     private final Viewport gameport;
-    private final HUD hud;
+    public final HUD hud;
 
     private final TiledMap map;
     private final OrthogonalTiledMapRenderer renderer;
@@ -72,8 +72,8 @@ public class PlayScreen implements Screen {
     public ArrayList<InteractiveTileObject> preparationStations = new ArrayList<>();
 
 
-    public Boolean scenarioComplete;
-    public Boolean scenarioFailed;
+    public Boolean scenarioComplete = false;
+    public Boolean scenarioFailed = false;
     public int customerTotal;
     public int orderCounter = 0;
     public int customerCounter = 0;
@@ -81,15 +81,15 @@ public class PlayScreen implements Screen {
     public static float trayX;
     public static float trayY;
 
-    private float timeSeconds = 0f;
+    public float timeSeconds = 0f;
 
-    private double timeSecondsCount = 0f;
+    public double timeSecondsCount = 0f;
 
     private int orderViewed = 0;
-    private double orderTimeGap = 0;
+    public double orderTimeGap = 0;
 
     public int reputationPoints = 3;
-    private double interval = 30;
+    public double interval = 30;
     public String difficulty;
     public float difficultyModerator;
 
@@ -103,8 +103,6 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MainGame game){
         this.game = game;
-        scenarioComplete = false;
-        scenarioFailed = false;
         RecipeManager.initialise();
         gamecam = new OrthographicCamera();
         // FitViewport to maintain aspect ratio whilst scaling to screen size
@@ -131,7 +129,6 @@ public class PlayScreen implements Screen {
         controlledChef.notificationSetBounds("Down");
 
         ordersArray = new ArrayList<>();
-
     }
 
     @Override
@@ -399,6 +396,7 @@ public class PlayScreen implements Screen {
                         case "Sprites.CompletedDishStation":
                             if (controlledChef.getInHandsRecipe() != null) {
                                 for(int i = 0; i < Math.min(3, ordersArray.size()); i++) {
+                                    System.out.println("Completed dish station checking " + controlledChef.getInHandsRecipe().getClass() + " against " + ordersArray.get(i).recipe.getClass());
                                     if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(i).recipe.getClass())) {
                                         controlledChef.dropItemOn(tile);
                                         ordersArray.get(i).orderComplete = true;
@@ -440,7 +438,6 @@ public class PlayScreen implements Screen {
             int recipeCount = RecipeManager.getCompleteRecipes().length;
             int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
             Order order;
-            System.out.println("Creating order for index " + randomNum);
 
             order = new Order(
                     RecipeManager.getCompleteRecipeAt(randomNum),
@@ -460,7 +457,7 @@ public class PlayScreen implements Screen {
             SaveManager.saveEndGameState(this);
             return;
         }
-        else if(scenarioComplete==Boolean.TRUE) {
+        else if(scenarioComplete==Boolean.TRUE && customerTotal != 0) {
             hud.updateOrder(Boolean.TRUE, 0);
             SaveManager.saveEndGameState(this);
             return;

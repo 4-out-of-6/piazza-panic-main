@@ -114,6 +114,17 @@ public class HUD implements Disposable {
     }
 
     /**
+     * Sets the time to the given value
+     * @param totalTimer the time stamp to assign to the hud
+     */
+    public void setTime(int totalTimer)
+    {
+        this.totalTimer = totalTimer;
+        worldTimerM = (int)(totalTimer / 60);
+        worldTimerS = totalTimer % 60;
+    }
+
+    /**
      * Calculates the user's score per order and updates the label.
      *
      * @param scenarioComplete Whether the game scenario has been completed.
@@ -206,5 +217,7 @@ public class HUD implements Disposable {
 
     public int getScore() { return score; }
 
-    public void setScore(int score) { this.score = score; }
+    public void setScore(int score) { this.score = score; updateScore(0); }
+
+    public void setOrder(int order) { updateOrder(false, order); }
 }

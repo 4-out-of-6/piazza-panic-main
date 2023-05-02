@@ -41,6 +41,7 @@ public class MainGame extends Game {
 	private StartScreen startScreen;
 	public boolean isMenuScreen;
 	private Preferences highScoreData;
+	private Boolean loadPossible;
 
 	public MainGame(){
 		isPlayScreen = false;
@@ -51,11 +52,11 @@ public class MainGame extends Game {
 		playScreen.customerTotal = customers;
 	}
 	public void setDifficulty(String difficulty){
-		if (difficulty=="Easy"){
+		if (difficulty.equals("Easy")){
 			playScreen.difficultyModerator = 3.5f;
-		} else if (difficulty=="Medium"){
+		} else if (difficulty.equals("Medium")){
 			playScreen.difficultyModerator = 2.5f;
-		} else if (difficulty=="Hard"){
+		} else if (difficulty.equals("Hard")){
 			playScreen.difficultyModerator = 1.5f;
 		}
 		playScreen.difficulty = difficulty;
@@ -66,6 +67,8 @@ public class MainGame extends Game {
 		menuScreen = new MenuScreen(this);
 		startScreen = new StartScreen(this);
 		playScreen = new PlayScreen(this);
+
+		loadPossible = LoadManager.initialise();
 
 		// Create high score data if none exists
 		highScoreData = Gdx.app.getPreferences("piazza_panic_hs");
@@ -84,6 +87,14 @@ public class MainGame extends Game {
 		super.render();
 		if (isMenuScreen) {
 			setScreen(menuScreen);
+			if(Gdx.input.isKeyJustPressed(Input.Keys.L) && loadPossible)
+			{
+				LoadManager.loadMidGameSave(playScreen, playScreen.hud);
+				setDifficulty(LoadManager.getDifficulty());
+				isMenuScreen = false;
+				isPlayScreen = true;
+				setScreen(startScreen);
+			}
 		} else{
 			if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)){
 				isPlayScreen = !isPlayScreen;
