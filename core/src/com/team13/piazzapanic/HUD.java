@@ -15,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class HUD implements Disposable {
     public Stage stage;
     private Boolean scenarioComplete;
+    private Boolean scenarioFailed;
 
     private Integer worldTimerM;
     private Integer worldTimerS;
+    public Integer totalTimer;
 
     private Integer score;
 
@@ -34,9 +36,11 @@ public class HUD implements Disposable {
     Label orderNumLT;
 
     public HUD(SpriteBatch sb){
-        this.scenarioComplete = Boolean.FALSE;
+        this.scenarioComplete = false;
+        this.scenarioFailed = false;
         worldTimerM = 0;
         worldTimerS = 0;
+        totalTimer = 0;
         score = 0;
         timeStr = String.format("%d", worldTimerM) + " : " + String.format("%d", worldTimerS);
         float fontX = 0.5F;
@@ -78,11 +82,12 @@ public class HUD implements Disposable {
      * @param scenarioComplete Whether the game scenario has been completed.
      */
     public void updateTime(Boolean scenarioComplete){
+        if(scenarioFailed) { return; }
         if(scenarioComplete){
             timeLabel.setColor(Color.GREEN);
             timeStr = String.format("%d", worldTimerM) + ":" + String.format("%d", worldTimerS);
             timeLabel.setText(String.format("TIME: " + timeStr + " MONEY: %d", score));
-            timeLabelT.setText("SCENARIO COMPLETE");
+            timeLabelT.setText("SCENARIO COMPLETE \n PRESS ENTER TO EXIT");
             table.center().top();
             stage.addActor(table);
             return;
@@ -95,6 +100,7 @@ public class HUD implements Disposable {
                 worldTimerS += 1;
             }
         }
+        totalTimer++;
         table.left().top();
         if(worldTimerS < 10){
             timeStr = String.format("%d", worldTimerM) + ":0" + String.format("%d", worldTimerS);
@@ -108,29 +114,30 @@ public class HUD implements Disposable {
     }
 
     /**
+     * Sets the time to the given value
+     * @param totalTimer the time stamp to assign to the hud
+     */
+    public void setTime(int totalTimer)
+    {
+        this.totalTimer = totalTimer;
+        worldTimerM = (int)(totalTimer / 60);
+        worldTimerS = totalTimer % 60;
+    }
+
+    /**
      * Calculates the user's score per order and updates the label.
      *
      * @param scenarioComplete Whether the game scenario has been completed.
-     * @param expectedTime The expected time an order should be completed in.
+     * @param amount The amount to increment the score by.
+     * @param timeLeft The percentage of the recipe's waiting time that is left, given between 0 and 1.
      */
-    public void updateScore(Boolean scenarioComplete, Integer expectedTime){
-        int addScore;
-        int currentTime;
+    public void updateScore(Boolean scenarioComplete, Integer amount, float timeLeft){
 
         if(this.scenarioComplete == Boolean.FALSE){
-            currentTime = (worldTimerM * 60) + worldTimerS;
-            if (currentTime <= expectedTime) {
-                addScore = 100;
-            }
-            else{
-                addScore = 100 - (5 * (currentTime -expectedTime));
-                if(addScore < 0){
-                    addScore = 0;
-                }
-            }
+            float adjustedTimeLeft = Math.max(timeLeft, 0.1f);
+            int addScore = (int)(amount * adjustedTimeLeft);
             score += addScore;
         }
-
 
         if(scenarioComplete==Boolean.TRUE){
             scoreLabel.setColor(Color.GREEN);
@@ -147,7 +154,11 @@ public class HUD implements Disposable {
         table.left().top();
         scoreLabel.setText(String.format("%d", score));
         stage.addActor(table);
+    }
 
+    public void updateScore(int amount) {
+        score += amount;
+        scoreLabel.setText(String.format("%d", score));
     }
 
     /**
@@ -167,13 +178,46 @@ public class HUD implements Disposable {
 
         table.left().top();
         orderNumL.setText(String.format("%d", orderNum));
-        orderNumLT.setText("ORDER");
+        orderNumLT.setText("ORDERS");
         stage.addActor(table);
 
+    }
+
+    /**
+     * Creates a fail state in the HUD
+     */
+    public void createFailState(boolean endlessMode)
+    {
+        scenarioFailed = true;
+
+        // If the gamemode is endless (i.e. the score was not discarded), then show the time and orders survived
+        if(endlessMode) {
+            timeLabel.setText(String.format("TIME: " + timeStr));
+        }
+        else
+        {
+            timeLabel.remove();
+        }
+
+        scoreLabel.remove();
+        scoreLabelT.remove();
+        orderNumL.remove();
+        orderNumLT.remove();
+
+        timeLabelT.setText("SCENARIO FAILED \n PRESS ENTER TO EXIT");
+
+        table.center().top();
+        stage.addActor(table);
     }
 
     @Override
     public void dispose() {
         stage.dispose();
     }
+
+    public int getScore() { return score; }
+
+    public void setScore(int score) { this.score = score; updateScore(0); }
+
+    public void setOrder(int order) { updateOrder(false, order); }
 }

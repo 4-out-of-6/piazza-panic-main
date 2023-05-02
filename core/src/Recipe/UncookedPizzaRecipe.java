@@ -28,6 +28,6 @@ public class UncookedPizzaRecipe extends Recipe{
     @Override
     public Ingredient getIngredientOverride()
     {
-        return new UncookedPizza(0f, 5f);
+        return new UncookedPizza(0f, 4);
     }
 }

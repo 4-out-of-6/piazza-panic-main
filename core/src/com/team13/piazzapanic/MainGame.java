@@ -2,8 +2,11 @@ package com.team13.piazzapanic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Game;
+
+import java.awt.*;
 
 public class MainGame extends Game {
 
@@ -33,29 +36,74 @@ public class MainGame extends Game {
 	public static final float PPM = 100;
 	public SpriteBatch batch;
 	public boolean isPlayScreen;
+	private MenuScreen menuScreen;
 	private PlayScreen playScreen;
 	private StartScreen startScreen;
+	public boolean isMenuScreen;
+	private Preferences highScoreData;
+	private Boolean loadPossible;
 
 	public MainGame(){
 		isPlayScreen = false;
+		isMenuScreen = true;
+	}
+
+	public void setCustomerCount(int customers){
+		playScreen.customerTotal = customers;
+	}
+	public void setDifficulty(String difficulty){
+		if (difficulty.equals("Easy")){
+			playScreen.difficultyModerator = 3.5f;
+		} else if (difficulty.equals("Medium")){
+			playScreen.difficultyModerator = 2.5f;
+		} else if (difficulty.equals("Hard")){
+			playScreen.difficultyModerator = 1.5f;
+		}
+		playScreen.difficulty = difficulty;
 	}
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
+		menuScreen = new MenuScreen(this);
 		startScreen = new StartScreen(this);
 		playScreen = new PlayScreen(this);
+
+		loadPossible = LoadManager.initialise();
+
+		// Create high score data if none exists
+		highScoreData = Gdx.app.getPreferences("piazza_panic_hs");
+		if(highScoreData.get().size() != 3)
+		{
+			highScoreData.clear();
+			highScoreData.putInteger("Easy", 0);
+			highScoreData.putInteger("Medium", 0);
+			highScoreData.putInteger("Hard", 0);
+			highScoreData.flush();
+		}
 	}
 
 	@Override
 	public void render() {
 		super.render();
-		if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)){
-			isPlayScreen = !isPlayScreen;
-		}
-		if (isPlayScreen) {
-			setScreen(playScreen);
-		} else {
-			setScreen(startScreen);
+		if (isMenuScreen) {
+			setScreen(menuScreen);
+			if(Gdx.input.isKeyJustPressed(Input.Keys.L) && loadPossible)
+			{
+				LoadManager.loadMidGameSave(playScreen, playScreen.hud);
+				setDifficulty(LoadManager.getDifficulty());
+				isMenuScreen = false;
+				isPlayScreen = true;
+				setScreen(startScreen);
+			}
+		} else{
+			if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)){
+				isPlayScreen = !isPlayScreen;
+			}
+			if (isPlayScreen) {
+				setScreen(playScreen);
+			} else {
+				setScreen(startScreen);
+			}
 		}
 	}
 

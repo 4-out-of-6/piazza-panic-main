@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.*;
 
 /**
- * This class implements the `Screen` interface and represents the start screen of the game.
+ * This class implements the `Screen` interface and represents the instruction screen of the game.
  */
 public class StartScreen implements Screen {
     private final MainGame game;

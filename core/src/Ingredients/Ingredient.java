@@ -18,6 +18,10 @@ public abstract class Ingredient extends Sprite {
      */
     public float cookTime;
     /**
+     * How close the preparation step is to failing.
+     */
+    public float failTimer;
+    /**
      * A flag to indicate if the ingredient needs to be pan-fried or cooked in the oven
      */
     public boolean cookInOven;
@@ -37,6 +41,10 @@ public abstract class Ingredient extends Sprite {
      * An array of textures representing different states of the ingredient.
      */
     public ArrayList<Texture> tex;
+    /**
+     * A flag to indicate if the ingredient has been prepared incorrectly and is therefore unusable.
+     */
+    private boolean preparationFailed;
 
     /**
      * Constructs a new Ingredient object with the specified preparation and cooking times.
@@ -50,20 +58,39 @@ public abstract class Ingredient extends Sprite {
         this.prepareTime = prepareTime;
         this.cookTime = cookTime;
         this.cookInOven = cookInOven;
-        this.recipeOverride = null;
-        this.amICooked = false;
-        this.amIPrepared = false;
-        this.tex = null;
+        setDefaults();
     }
 
     public Ingredient(float prepareTime, float cookTime) {
         this.prepareTime = prepareTime;
         this.cookTime = cookTime;
         this.cookInOven = false;
+        setDefaults();
+    }
+
+    void setDefaults()
+    {
         this.recipeOverride = null;
         this.amICooked = false;
         this.amIPrepared = false;
         this.tex = null;
+        failTimer = 0;
+    }
+
+    /**
+     * A copy constructor to create a shallow copy of an ingredient class.
+     * @param another The ingredient class to replicate
+     */
+    public Ingredient(Ingredient another)
+    {
+        this.prepareTime = another.prepareTime;
+        this.cookTime = another.cookTime;
+        this.cookInOven = another.cookInOven;
+        this.recipeOverride = another.recipeOverride;
+        this.amICooked = another.amICooked;
+        this.amIPrepared = another.amIPrepared;
+        this.tex = another.tex;
+        this.failTimer = another.failTimer;
     }
 
     /**
@@ -112,6 +139,18 @@ public abstract class Ingredient extends Sprite {
     }
 
     /**
+     * Returns the flag indicating whether the preparation step has failed.
+     * @return a boolean value - true if failed, false otherwise.
+     */
+    public boolean hasFailed() { return preparationFailed; }
+
+    /**
+     * Sets the Ingredient's failure flag to true, indicating that a preparation
+     * step has failed.
+     */
+    public void setFailed() { preparationFailed = true; }
+
+    /**
      * Creates and draws a new Sprite object representing the ingredient.
      *
      * @param x The x coordinate of the ingredient.
@@ -135,7 +174,9 @@ public abstract class Ingredient extends Sprite {
      *
      * */
     private int findCorrectSkin(){
-        if (isPrepared() && isCooked()){
+        if(hasFailed()) {
+            return 3;
+        } else if (isPrepared() && isCooked()){
             return 2;
         } else if (isPrepared() || isCooked()){
             return 1;

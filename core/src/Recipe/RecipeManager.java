@@ -27,6 +27,14 @@ public class RecipeManager {
             new Texture("Food/jacket_potato_recipe.png")
     };
 
+    /* Stores the minimum countdown time for each 'complete' recipe */
+    private static float[] minRecipeCounters = {
+            25,
+            25,
+            30,
+            20
+    };
+
     private static Recipe[] completeRecipes;
 
     /** Initialises the RecipeManager */
@@ -54,6 +62,13 @@ public class RecipeManager {
      */
     public static Recipe getCompleteRecipeAt(int index) { return completeRecipes[index]; }
 
+    /**
+     * Returns the recipe at the given index
+     * @param index the index of the recipe to get
+     * @return the Recipe at the given index
+     */
+    public static Recipe getRecipeAt(int index) { return recipes[index]; }
+
 
     /**
      * Returns the Texture of the Recipe at the given index
@@ -61,6 +76,13 @@ public class RecipeManager {
      * @return the Texture at the given index
      */
     public static Texture getRecipeTextureAt(int index) { return recipeTextures[index]; }
+
+    /**
+     * Returns the minimum required countdown time of the Recipe at the given index
+     * @param index the index of the countdown time to get
+     * @return the minimum time required to prepare the Recipe
+     */
+    public static float getMinRecipeCounterAt(int index) { return minRecipeCounters[index]; }
 
     /**
      * Gets all the recipes implemented in the game
@@ -72,5 +94,37 @@ public class RecipeManager {
      * Gets only the recipes that are completed dishes in the game
      */
     public static Recipe[] getCompleteRecipes() { return completeRecipes; }
+
+    /**
+     * Returns the index of the given recipe in the Recipes array
+     * @param recipe the recipe to find the index of
+     * @return an integer indicating the index of the recipe in the array, or -1 if the recipe cannot be found
+     */
+    public static int getIndexOfRecipe(Recipe recipe) {
+        for(int i = 0; i < recipes.length; i++)
+        {
+            if(recipes[i].getClass().getName().equals(recipe.getClass().getName()))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index of the given complete recipe in the Recipes array
+     * @param recipe the complete recipe to find the index of
+     * @return an integer indicating the index of the complete recipe in the array, or -1 if the recipe cannot be found
+     */
+    public static int getIndexOfCompleteRecipe(Recipe recipe) {
+        for(int i = 0; i < completeRecipes.length; i++)
+        {
+            if(completeRecipes[i].getClass().getName().equals(recipe.getClass().getName()))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }

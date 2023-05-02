@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.9" tiledversion="1.9.2" name="KitchenTileSet" tilewidth="16" tileheight="16" tilecount="27" columns="3">
- <image source="TileSetNew.png" width="48" height="144"/>
+<tileset version="1.9" tiledversion="1.9.2" name="KitchenTileSet" tilewidth="16" tileheight="16" tilecount="28" columns="3">
+ <image source="TileSetWithDoor.png" width="48" height="144"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
    <object id="1" name="worktop" x="1.19555" y="1.11015" width="13.6634" height="14.005"/>
@@ -111,4 +111,9 @@
    <object id="1" name="oven" x="1.11418" y="1.05345" width="13.9196" height="13.7488"/>
   </objectgroup>
  </tile>
+ <tile id="26">
+   <objectgroup draworder="index" id="3">
+    <object id="1" name="new_chef_station" x="1.19555" y="1.19555" width="13.578" height="13.7488"/>
+   </objectgroup>
+  </tile>
 </tileset>

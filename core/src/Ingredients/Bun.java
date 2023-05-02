@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class Bun extends Ingredient{
 
+
     /**
 
      The Bun class represents a specific type of ingredient in the game, specifically the burger buns.
@@ -22,5 +23,6 @@ public class Bun extends Ingredient{
         super.tex.add(null);
         super.tex.add(new Texture("Food/Burger_buns.png"));
         super.tex.add(new Texture("Food/Toasted_burger_buns.png"));
+        super.tex.add(new Texture("Food/Burnt_burger_buns.png"));
     }
 }

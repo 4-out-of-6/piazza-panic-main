@@ -33,24 +33,6 @@ public class Worktop extends InteractiveTileObject {
 
 
     /**
-     * Gets the x-coordinate of the worktop.
-     * @return The x-coordinate of the worktop.
-     */
-    public float getX(){
-        return super.bdefNew.position.x;
-    }
-
-
-    /**
-     * Gets the y-coordinate of the worktop.
-     * @return The y-coordinate of the worktop.
-     */
-    public float getY(){
-        return super.bdefNew.position.y;
-    }
-
-
-    /**
      * @param item The ingredient/recipe to place on the worktop.
      */
     public void setHeldItem(Sprite item)

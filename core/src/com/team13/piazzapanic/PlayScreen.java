@@ -5,8 +5,10 @@ import Recipe.Recipe;
 import Sprites.*;
 import Recipe.Order;
 import Recipe.RecipeManager;
+import Recipe.OrderTickets;
 import Tools.B2WorldCreator;
 import Tools.WorldContactListener;
+import Recipe.ReputationPoints;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,7 +16,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -50,33 +51,47 @@ public class PlayScreen implements Screen {
     private final MainGame game;
     private final OrthographicCamera gamecam;
     private final Viewport gameport;
-    private final HUD hud;
+    public final HUD hud;
 
     private final TiledMap map;
     private final OrthogonalTiledMapRenderer renderer;
 
     private final World world;
-    private final Chef chef1;
-    private final Chef chef2;
-    private final Chef chef3;
+    public final Chef chef1;
+    public final Chef chef2;
+    public final Chef chef3;
+    private int chefsUnlocked;
 
     private Chef controlledChef;
 
     public ArrayList<Order> ordersArray;
 
     public PlateStation plateStation;
+    public NewChefStation newChefStation;
     public ArrayList<Worktop> worktopStations = new ArrayList<>();
+    public ArrayList<InteractiveTileObject> preparationStations = new ArrayList<>();
 
 
-    public Boolean scenarioComplete;
-    public Boolean createdOrder;
+    public Boolean scenarioComplete = false;
+    public Boolean scenarioFailed = false;
+    public int customerTotal;
+    public int orderCounter = 0;
+    public int customerCounter = 0;
 
     public static float trayX;
     public static float trayY;
 
-    private float timeSeconds = 0f;
+    public float timeSeconds = 0f;
 
-    private float timeSecondsCount = 0f;
+    public double timeSecondsCount = 0f;
+
+    private int orderViewed = 0;
+    public double orderTimeGap = 0;
+
+    public int reputationPoints = 3;
+    public double interval = 30;
+    public String difficulty;
+    public float difficultyModerator;
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -88,9 +103,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MainGame game){
         this.game = game;
-        scenarioComplete = Boolean.FALSE;
         RecipeManager.initialise();
-        createdOrder = Boolean.FALSE;
         gamecam = new OrthographicCamera();
         // FitViewport to maintain aspect ratio whilst scaling to screen size
         gameport = new FitViewport(MainGame.V_WIDTH / MainGame.PPM, MainGame.V_HEIGHT / MainGame.PPM, gamecam);
@@ -107,15 +120,15 @@ public class PlayScreen implements Screen {
         world = new World(new Vector2(0,0), true);
         new B2WorldCreator(world, map, this);
 
-        chef1 = new Chef(this.world, 31.5F,65);
-        chef2 = new Chef(this.world, 128,65);
-        chef3 = new Chef(this.world, 79.75F, 65);
+        chef1 = new Chef(this.world, 31.5F,65, false);
+        chef2 = new Chef(this.world, 71.75f,16, true);
+        chef3 = new Chef(this.world, 71.75f, 16, true);
+        chefsUnlocked = 1;
         controlledChef = chef1;
         world.setContactListener(new WorldContactListener());
         controlledChef.notificationSetBounds("Down");
 
         ordersArray = new ArrayList<>();
-
     }
 
     @Override
@@ -145,39 +158,46 @@ public class PlayScreen implements Screen {
      */
 
     public void handleInput(float dt){
-        // If all three chefs can move, switch to the next one
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.R) &&
-                chef1.getUserControlChef() &&
-                chef2.getUserControlChef() &&
-                chef3.getUserControlChef())) {
-            controlledChef.b2body.setLinearVelocity(0, 0);
-            if (controlledChef.equals(chef1)) {
-                controlledChef = chef2;
-            } else if(controlledChef.equals(chef2)) {
-                controlledChef = chef3;
-            } else {
-                controlledChef = chef1;
+
+        // Check for save key pressed
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P))
+        {
+            try {
+                SaveManager.saveMidGameState(this, hud);
+                System.out.println("SAVE SUCCESSFUL");
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.toString());
             }
         }
-        // If the controlled chef cannot move, switch to the next available one
-        if (!controlledChef.getUserControlChef()){
-            controlledChef.b2body.setLinearVelocity(0, 0);
+
+        boolean c1Free = chef1.getUserControlChef();
+        boolean c2Free = chef2.getUserControlChef();
+        boolean c3Free = chef3.getUserControlChef();
+        boolean c2Unlocked = !chef2.isLocked();
+        boolean c3Unlocked = !chef3.isLocked();
+
+        // If the R key is pressed, or when a chef is unavailable, switch to the next one
+        if(Gdx.input.isKeyJustPressed(Input.Keys.R) || controlledChef.getUserControlChef() == false)
+        {
             if(controlledChef.equals(chef1))
             {
-                if(chef2.getUserControlChef()) { controlledChef = chef2; }
-                else if(chef3.getUserControlChef()) { controlledChef = chef3; }
+                if(c2Free && c2Unlocked) { controlledChef = chef2; }
+                else if(c3Free & c3Unlocked) { controlledChef = chef3; }
             }
             else if(controlledChef.equals(chef2))
             {
-                if(chef3.getUserControlChef()) { controlledChef = chef3; }
-                else if(chef1.getUserControlChef()) { controlledChef = chef1; }
+                if(c3Free & c3Unlocked) { controlledChef = chef3; }
+                else if(c1Free) { controlledChef = chef1; }
             }
-            else
+            else if(controlledChef.equals(chef3))
             {
-                if(chef1.getUserControlChef()) { controlledChef = chef1; }
-                else if(chef2.getUserControlChef()) { controlledChef = chef2; }
+                if(c1Free) { controlledChef = chef1; }
+                else if(c2Free) { controlledChef = chef2; }
             }
         }
+
         if (controlledChef.getUserControlChef()) {
                 float xVelocity = 0;
                 float yVelocity = 0;
@@ -195,6 +215,13 @@ public class PlayScreen implements Screen {
                     xVelocity += 0.5f;
                 }
                 controlledChef.b2body.setLinearVelocity(xVelocity, yVelocity);
+
+                // If the chef is being moved and is currently failing a preparation step, cancel the failure
+                if(controlledChef.isFailingStep() && (xVelocity != 0 || yVelocity != 0))
+                {
+                    controlledChef.preventStepFailure();
+                }
+
             }
             else {
                 controlledChef.b2body.setLinearVelocity(0, 0);
@@ -210,6 +237,19 @@ public class PlayScreen implements Screen {
         }
         if (controlledChef.b2body.getLinearVelocity().y < 0){
             controlledChef.notificationSetBounds("Down");
+        }
+
+        // Check for a change in the order being viewed
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            orderViewed = 0;
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            if(ordersArray.size() > 1) { orderViewed = 1; }
+            else { orderViewed = 0; }
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            if(ordersArray.size() > 2) { orderViewed = 2; }
+            else { orderViewed = Math.max(0, ordersArray.size() - 1); }
         }
 
 
@@ -278,7 +318,8 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.ChoppingBoard":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if (controlledChef.getInHandsIng().prepareTime > 0) {
                                     controlledChef.setUserControlChef(false);
                                 }
@@ -311,7 +352,8 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.Pan":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if (controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven == false) {
                                     controlledChef.setUserControlChef(false);
                                 }
@@ -319,21 +361,46 @@ public class PlayScreen implements Screen {
                             break;
 
                         case "Sprites.Oven":
-                            if (controlledChef.getInHandsIng() != null) {
+                            if(tile.isLocked()) { tryUnlock(tile); }
+                            else if (controlledChef.getInHandsIng() != null) {
                                 if(controlledChef.getInHandsIng().isPrepared() && controlledChef.getInHandsIng().cookTime > 0 && controlledChef.getInHandsIng().cookInOven)
                                 {
                                     controlledChef.setUserControlChef(false);
                                 }
                             }
+                            break;
+
+                        case "Sprites.NewChefStation":
+                            if(chefsUnlocked == 1)
+                            {
+                                if(hud.getScore() >= 200 && !scenarioFailed && !scenarioComplete)
+                                {
+                                    hud.updateScore(-200);
+                                    chefsUnlocked++;
+                                    controlledChef.setY(controlledChef.getY() + (16 / MainGame.PPM));
+                                    chef2.setUnlocked();
+                                }
+                            }
+                            else if(chefsUnlocked == 2)
+                            {
+                                if(hud.getScore() >= 250 && !scenarioFailed && !scenarioComplete)
+                                {
+                                    hud.updateScore(-250);
+                                    chefsUnlocked++;
+                                    chef3.setUnlocked();
+                                }
+                            }
+                            break;
 
 
                         case "Sprites.CompletedDishStation":
                             if (controlledChef.getInHandsRecipe() != null) {
-                                if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(0).recipe.getClass())) {
-                                    controlledChef.dropItemOn(tile);
-                                    ordersArray.get(0).orderComplete = true;
-                                    if (ordersArray.size() == 1) {
-                                        scenarioComplete = Boolean.TRUE;
+                                for(int i = 0; i < Math.min(3, ordersArray.size()); i++) {
+                                    System.out.println("Completed dish station checking " + controlledChef.getInHandsRecipe().getClass() + " against " + ordersArray.get(i).recipe.getClass());
+                                    if (controlledChef.getInHandsRecipe().getClass().equals(ordersArray.get(i).recipe.getClass())) {
+                                        controlledChef.dropItemOn(tile);
+                                        ordersArray.get(i).orderComplete = true;
+                                        break;
                                     }
                                 }
                             }
@@ -368,37 +435,71 @@ public class PlayScreen implements Screen {
      */
     public void createOrder() {
 
-        int recipeCount = RecipeManager.getCompleteRecipes().length;
-        int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
-        Order order;
-        System.out.println("Creating order for index " + randomNum);
+            int recipeCount = RecipeManager.getCompleteRecipes().length;
+            int randomNum = ThreadLocalRandom.current().nextInt(0, recipeCount);
+            Order order;
 
-        for(int i = 0; i<5; i++){
-            order = new Order(RecipeManager.getCompleteRecipeAt(randomNum), RecipeManager.getRecipeTextureAt(randomNum));
+            order = new Order(
+                    RecipeManager.getCompleteRecipeAt(randomNum),
+                    RecipeManager.getRecipeTextureAt(randomNum),
+                    RecipeManager.getMinRecipeCounterAt(randomNum) * difficultyModerator
+            );
             ordersArray.add(order);
-            randomNum = ThreadLocalRandom.current().nextInt(1, recipeCount);
-        }
-        hud.updateOrder(Boolean.FALSE, 1);
+            hud.updateOrder(scenarioComplete, orderCounter);
     }
 
     /**
      * Updates the orders as they are completed, or if the game scenario has been completed.
      */
     public void updateOrder(){
-        if(scenarioComplete==Boolean.TRUE) {
-            hud.updateScore(Boolean.TRUE, (6 - ordersArray.size()) * 35);
-            hud.updateOrder(Boolean.TRUE, 0);
+        if(scenarioFailed == true) {
+            hud.createFailState(customerTotal == -1);
+            SaveManager.saveEndGameState(this);
             return;
         }
-        if(ordersArray.size() != 0) {
-            if (ordersArray.get(0).orderComplete) {
-                hud.updateScore(Boolean.FALSE, (6 - ordersArray.size()) * 35);
-                ordersArray.remove(0);
-                hud.updateOrder(Boolean.FALSE, 6 - ordersArray.size());
-                return;
-            }
-            ordersArray.get(0).create(trayX, trayY, game.batch);
+        else if(scenarioComplete==Boolean.TRUE && customerTotal != 0) {
+            hud.updateOrder(Boolean.TRUE, 0);
+            SaveManager.saveEndGameState(this);
+            return;
         }
+        if(ordersArray.size() != 0)
+        {
+            for(int i = 0; i < ordersArray.size(); i++)
+            {
+                if(ordersArray.get(i).orderFailed) {
+                    System.out.println("ORDER " + i + " FAILED");
+                    ordersArray.remove(i);
+                    orderViewed = Math.max(0, orderViewed - 1);
+                    reputationPoints--;
+                    if(reputationPoints == 0)
+                    {
+                        System.out.println("SCENARIO FAILED");
+                        scenarioFailed = true;
+                        if(orderCounter == -1) { hud.setScore(0); }
+                        ordersArray.clear();
+                        orderViewed = 0;
+                        return;
+                    }
+                    else
+                    {
+                        orderCounter++;
+                        customerTotal++;
+                    }
+                }
+                else if (ordersArray.get(i).orderComplete) {
+                    float timeLeft = ordersArray.get(i).getCountdownTimer() / ordersArray.get(i).getInitialTimer();
+                    hud.updateScore(Boolean.FALSE, 150, timeLeft);
+                    ordersArray.remove(i);
+                    orderCounter++;
+                    orderViewed = Math.max(0, orderViewed - 1);
+                    hud.updateOrder(Boolean.FALSE, orderCounter);
+                    // We can break here, as only one order will be completed in any one frame
+                    break;
+                }
+            }
+            if(ordersArray.size() > 0) { ordersArray.get(orderViewed).create(Gdx.graphics.getDeltaTime(), trayX, trayY, game.batch); }
+        }
+        OrderTickets.create(ordersArray, orderViewed, game.batch);
     }
 
     /**
@@ -419,10 +520,28 @@ public class PlayScreen implements Screen {
         timeSeconds +=Gdx.graphics.getRawDeltaTime();
         timeSecondsCount += Gdx.graphics.getDeltaTime();
 
-        if(Math.round(timeSecondsCount) == 5 && createdOrder == Boolean.FALSE){
-            createdOrder = Boolean.TRUE;
+        //Adds an order every 30 seconds (decreasing) and if the order list isn't full
+        if(orderTimeGap <= timeSecondsCount && customerCounter != customerTotal && ordersArray.size() <= 3 && !scenarioComplete && !scenarioFailed){
             createOrder();
+            customerCounter++;
+            //1 in 10 chance to have 2 orders arrive
+            if (ThreadLocalRandom.current().nextInt(10) == 1 && ordersArray.size() <= 2 && customerCounter != customerTotal) {
+                createOrder();
+                customerCounter++;
+            }
+            orderTimeGap = timeSecondsCount + interval;
+            interval = interval * 0.9;
         }
+
+        //Check win condition
+        if(orderCounter == customerTotal){
+            scenarioComplete = Boolean.TRUE;
+        }
+
+        if((scenarioComplete || scenarioFailed) && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+            Gdx.app.exit();
+        }
+
         float period = 1f;
         if(timeSeconds > period) {
             timeSeconds -= period;
@@ -437,7 +556,22 @@ public class PlayScreen implements Screen {
         hud.stage.draw();
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
+
+        // Render locked icon on locked stations
+        for(InteractiveTileObject s : preparationStations)
+        {
+            if(s.isLocked()) {
+                LockedState.create(s.getX(), s.getY(), controlledChef, game.batch);
+            }
+        }
+        // Render the chef buying options
+        if(chefsUnlocked < 3)
+        {
+            BuyChefState.create(newChefStation.getX(), newChefStation.getY(), controlledChef, chefsUnlocked, game.batch);
+        }
+
         updateOrder();
+        ReputationPoints.create(reputationPoints, game.batch);
         chef1.draw(game.batch);
         chef2.draw(game.batch);
         chef3.draw(game.batch);
@@ -469,21 +603,21 @@ public class PlayScreen implements Screen {
             }
         }
 
-        if (!chef1.getUserControlChef()) {
+        if (!chef1.getUserControlChef() || chef1.isFailingStep()) {
             if (chef1.getTouchingTile() != null && chef1.getInHandsIng() != null){
                 if (chef1.getTouchingTile().getUserData() instanceof InteractiveTileObject){
                     chef1.displayIngStatic(game.batch);
                 }
             }
         }
-        if (!chef2.getUserControlChef()) {
+        if (!chef2.getUserControlChef() || chef2.isFailingStep()) {
             if (chef2.getTouchingTile() != null && chef2.getInHandsIng() != null) {
                 if (chef2.getTouchingTile().getUserData() instanceof InteractiveTileObject) {
                     chef2.displayIngStatic(game.batch);
                 }
             }
         }
-        if (!chef3.getUserControlChef()) {
+        if (!chef3.getUserControlChef() || chef3.isFailingStep()) {
             if (chef3.getTouchingTile() != null && chef3.getInHandsIng() != null) {
                 if (chef3.getTouchingTile().getUserData() instanceof InteractiveTileObject) {
                     chef3.displayIngStatic(game.batch);
@@ -528,5 +662,19 @@ public class PlayScreen implements Screen {
         renderer.dispose();
         world.dispose();
         hud.dispose();
+    }
+
+
+    /**
+     * Tries to unlock the given tile
+     * @param tile the InteractiveTileObject to try unlocking.
+     */
+    void tryUnlock(InteractiveTileObject tile)
+    {
+        if(hud.getScore() >= 100 && !scenarioFailed && !scenarioComplete)
+        {
+            hud.updateScore(-100);
+            tile.setUnlocked();
+        }
     }
 }

@@ -2,6 +2,7 @@ package Sprites;
 
 import Ingredients.*;
 import Recipe.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -74,7 +75,7 @@ public class PlateStation extends InteractiveTileObject {
                     {
                         if(ing.getClass().toString().equals(recipe.getIngredients().get(i).getClass().toString()))
                         {
-                            if(ing.isCooked() && ing.isPrepared())
+                            if(ing.isCooked() && ing.isPrepared() && !ing.hasFailed())
                             {
                                 ingFound = true;
                             }
@@ -104,6 +105,24 @@ public class PlateStation extends InteractiveTileObject {
      */
     public ArrayList getPlate(){
         return (ArrayList) this.plate;
+    }
+
+    /**
+     * Sets the plate station's content to the completed recipe
+     * @param recipeDone The completed recipe to assign.
+     */
+    public void setRecipeDone(Recipe recipeDone) { plate.clear(); this.recipeDone = recipeDone; }
+
+    /**
+     * Sets the plate station's content to a given plate
+     * @param ingredients A sprite array of ingredients to add to the plate.
+     */
+    public void setPlate(ArrayList<Sprite> ingredients) {
+        plate.clear();
+        for(Sprite i : ingredients)
+        {
+            dropItem((Ingredient) i);
+        }
     }
 
     /**
