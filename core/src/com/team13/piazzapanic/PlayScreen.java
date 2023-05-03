@@ -16,6 +16,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -92,6 +93,8 @@ public class PlayScreen implements Screen {
     public double interval = 30;
     public String difficulty;
     public float difficultyModerator;
+    private float saveIconTimer;
+    private Sprite saveIcon = new Sprite(new Texture("save_icon.png"));
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -165,6 +168,7 @@ public class PlayScreen implements Screen {
             try {
                 SaveManager.saveMidGameState(this, hud);
                 System.out.println("SAVE SUCCESSFUL");
+                saveIconTimer = 2f;
             }
             catch(Exception e)
             {
@@ -636,6 +640,16 @@ public class PlayScreen implements Screen {
         if (chef3.previousInHandRecipe != null){
             chef3.displayIngDynamic(game.batch);
         }
+
+        // Render save icon
+        if(saveIconTimer > 0)
+        {
+            saveIconTimer -= delta;
+            saveIcon.setBounds(144 / MainGame.PPM, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
+            saveIcon.setAlpha((float)(0.75f + (Math.sin(saveIconTimer * 10) / 4f)));
+            saveIcon.draw(game.batch);
+        }
+
         game.batch.end();
     }
 
@@ -672,12 +686,17 @@ public class PlayScreen implements Screen {
      * Tries to unlock the given tile
      * @param tile the InteractiveTileObject to try unlocking.
      */
-    void tryUnlock(InteractiveTileObject tile)
+    public static void tryUnlock(HUD hud, InteractiveTileObject tile, Boolean scenarioComplete, Boolean scenarioFailed)
     {
         if(hud.getScore() >= 100 && !scenarioFailed && !scenarioComplete)
         {
             hud.updateScore(-100);
             tile.setUnlocked();
         }
+    }
+
+    void tryUnlock(InteractiveTileObject tile)
+    {
+        tryUnlock(hud, tile, scenarioComplete, scenarioFailed);
     }
 }

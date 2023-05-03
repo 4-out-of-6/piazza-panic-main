@@ -34,8 +34,10 @@ public class HUD implements Disposable {
     Label scoreLabelT;
     Label orderNumL;
     Label orderNumLT;
+    SpriteBatch sb;
 
     public HUD(SpriteBatch sb){
+        this.sb = sb;
         this.scenarioComplete = false;
         this.scenarioFailed = false;
         worldTimerM = 0;
@@ -49,7 +51,7 @@ public class HUD implements Disposable {
         BitmapFont font = new BitmapFont();
         font.getData().setScale(fontX, fontY);
         Viewport viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, sb);
+        if(sb != null) stage = new Stage(viewport, sb);
 
         table = new Table();
         table.left().top();
@@ -73,7 +75,7 @@ public class HUD implements Disposable {
         table.add(orderNumL).padTop(2).padLeft(2);
 
         table.left().top();
-        stage.addActor(table);
+        if(sb != null) stage.addActor(table);
     }
 
     /**
@@ -154,7 +156,7 @@ public class HUD implements Disposable {
 
         table.left().top();
         scoreLabel.setText(String.format("%d", score));
-        stage.addActor(table);
+        if(sb != null) stage.addActor(table);
     }
 
     public void updateScore(int amount) {

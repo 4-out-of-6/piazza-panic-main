@@ -33,7 +33,7 @@ public final class PowerUpManager {
 
     private static Texture[] powerUpTextures = new Texture[]{
             new Texture("Power_Ups/0.png"),
-            new Texture("Power_ups/1.png"),
+            new Texture("Power_Ups/1.png"),
             new Texture("Power_Ups/2.png"),
             new Texture("Power_Ups/3.png"),
             new Texture("Power_Ups/4.png")
@@ -74,7 +74,6 @@ public final class PowerUpManager {
         timer -= dt;
         // Condition: Power-Up is not currently active and has not been spawned in
         if (powerUpSpawned == false && powerUpActive == false && timer <= 0) {
-            timer = 15f;
             powerUpId = ThreadLocalRandom.current().nextInt(0, powerUpTextures.length);
             Vector2 spawnPoint = spawnPoints[ThreadLocalRandom.current().nextInt(0, spawnPoints.length)];
             powerUpX = spawnPoint.x * (16 / MainGame.PPM);
@@ -97,6 +96,7 @@ public final class PowerUpManager {
             {
                 powerUpSpawned = false;
                 powerUpActive = true;
+                powerUpSprite.setAlpha(1f);
                 if(powerUpId == 4) {
                     gambler(screen);
                     timer = 2f;
