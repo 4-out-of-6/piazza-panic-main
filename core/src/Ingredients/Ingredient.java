@@ -17,6 +17,7 @@ public abstract class Ingredient extends Sprite {
      * The time required to cook the ingredient.
      */
     public float cookTime;
+
     /**
      * How close the preparation step is to failing.
      */

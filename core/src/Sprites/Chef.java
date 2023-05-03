@@ -81,6 +81,10 @@ public class Chef extends Sprite {
     private float fadeTime;
     private boolean failingStep;
 
+    private static Texture timerBackground = new Texture("Timer/timer_background.png");
+    private static Texture timerFill = new Texture("Timer/timer_foreground_full.png");
+    private static Texture timerFailingFill = new Texture("Timer/timer_foreground_danger.png");
+
     /**
      * Chef class constructor that initializes all the fields
      * @param world the world the chef exists in
@@ -429,6 +433,7 @@ public class Chef extends Sprite {
         Gdx.app.log("", getInHandsIng().toString());
         if ((whatTouching != null && !chefOnChefCollision)) {
             InteractiveTileObject tile = (InteractiveTileObject) whatTouching.getUserData();
+            float xPos;
             if (tile instanceof ChoppingBoard) {
                 ChoppingBoard tileNew = (ChoppingBoard) tile;
                 getInHandsIng().create(tileNew.getX() - (0.5f / MainGame.PPM), tileNew.getY() - (0.2f / MainGame.PPM), batch);
@@ -443,6 +448,33 @@ public class Chef extends Sprite {
                 getInHandsIng().create(tileNew.getX(), tileNew.getY() - (0.01f / MainGame.PPM), batch);
                 setChefSkin(null);
             }
+
+            // Draw timer to indicate that an ingredient is being cooked
+            Sprite timer = new Sprite(timerBackground);
+            float timerX = tile.getX() - (6 / MainGame.PPM);
+            System.out.println("Timer drawn at " + timerX);
+            timer.setBounds(timerX, tile.getY(), 12 / MainGame.PPM, 3 / MainGame.PPM);
+            Sprite timerValue;
+            if(isFailingStep())
+            {
+                timerValue = new Sprite(timerFailingFill);
+                timerValue.setBounds(timerX + (1 / MainGame.PPM), timer.getY() + (1 / MainGame.PPM), getInHandsIng().failTimer / 3 * (10 / MainGame.PPM), 1 / MainGame.PPM);
+            }
+            else
+            {
+                timerValue = new Sprite(timerFill);
+
+                if(tile instanceof ChoppingBoard)
+                {
+                    timerValue.setBounds(timerX + (1 / MainGame.PPM), timer.getY() + (1 / MainGame.PPM), waitTimer / getInHandsIng().prepareTime * (10  / MainGame.PPM), 1 / MainGame.PPM);
+                }
+                else
+                {
+                    timerValue.setBounds(timerX + (1 / MainGame.PPM), timer.getY() + (1 / MainGame.PPM), waitTimer / getInHandsIng().cookTime * (10  / MainGame.PPM), 1 / MainGame.PPM);
+                }
+            }
+            timer.draw(batch);
+            timerValue.draw(batch);
         }
     }
 
