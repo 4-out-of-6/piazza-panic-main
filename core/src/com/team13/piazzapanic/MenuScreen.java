@@ -21,7 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class MenuScreen implements Screen {
     private final MainGame game;
     private final Texture backgroundImage;
-    private final Sprite backgroundSprite;
+    private final Texture backgroundImageNoLoad;
+    private Sprite backgroundSprite;
     private final OrthographicCamera camera;
     private final Viewport viewport;
     private BitmapFont font = new BitmapFont();
@@ -34,12 +35,21 @@ public class MenuScreen implements Screen {
     public MenuScreen(MainGame game) {
         this.game = game;
         backgroundImage = new Texture("levelSelectImage.png");
+        backgroundImageNoLoad = new Texture("levelSelectImageNoLoad.png");
         backgroundSprite = new Sprite(backgroundImage);
         camera = new OrthographicCamera();
         viewport = new FitViewport(MainGame.V_WIDTH, MainGame.V_HEIGHT, camera);
         font.getData().setScale(1.2F, 1F);
         font2.getData().setScale(1.2F, 1F);
         font.setColor(Color.RED);
+    }
+
+    /**
+     * Method to change the screen shown if a save file cannot be found
+     */
+    public void showNoLoad()
+    {
+        backgroundSprite = new Sprite(backgroundImageNoLoad);
     }
 
     /**

@@ -69,6 +69,7 @@ public class MainGame extends Game {
 		playScreen = new PlayScreen(this);
 
 		loadPossible = LoadManager.initialise();
+		if(!loadPossible) { menuScreen.showNoLoad(); }
 
 		// Create high score data if none exists
 		highScoreData = Gdx.app.getPreferences("piazza_panic_hs");

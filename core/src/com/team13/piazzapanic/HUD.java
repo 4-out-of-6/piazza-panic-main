@@ -174,6 +174,8 @@ public class HUD implements Disposable {
         if(scenarioComplete==Boolean.TRUE){
             orderNumL.remove();
             orderNumLT.remove();
+            scoreLabelT.remove();
+            scoreLabel.remove();
             table.center().top();
             stage.addActor(table);
             return;
