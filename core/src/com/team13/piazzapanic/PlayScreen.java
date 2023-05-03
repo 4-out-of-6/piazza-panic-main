@@ -95,6 +95,7 @@ public class PlayScreen implements Screen {
     public float difficultyModerator;
     private float saveIconTimer;
     private Sprite saveIcon = new Sprite(new Texture("save_icon.png"));
+    private Sprite newHighScore = new Sprite(new Texture("new_high_score.png"));
 
     /**
      * PlayScreen constructor initializes the game instance, sets initial conditions for scenarioComplete and createdOrder,
@@ -648,6 +649,13 @@ public class PlayScreen implements Screen {
             saveIcon.setBounds(144 / MainGame.PPM, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
             saveIcon.setAlpha((float)(0.75f + (Math.sin(saveIconTimer * 10) / 4f)));
             saveIcon.draw(game.batch);
+        }
+
+        // Render new high score if applicable
+        if((scenarioComplete || scenarioFailed) && SaveManager.newHighScore)
+        {
+            newHighScore.setBounds(144/MainGame.PPM, 0, 16 / MainGame.PPM, 16 / MainGame.PPM);
+            newHighScore.draw(game.batch);
         }
 
         game.batch.end();

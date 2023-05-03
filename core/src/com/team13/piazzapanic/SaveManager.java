@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public final class SaveManager {
 
     private static boolean endGameSaved = false;
+    public static boolean newHighScore = false;
 
     public static void saveEndGameState(PlayScreen screen)
     {
@@ -30,6 +31,7 @@ public final class SaveManager {
             {
                 hsData.putInteger(difficulty, screen.orderCounter);
                 hsData.flush();
+                newHighScore = true;
             }
 
             // Clear mid-game save data to prevent save hopping
